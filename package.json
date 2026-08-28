@@ -4,6 +4,9 @@
   "private": true,
   "type": "module",
   "main": "src/server.js",
+  "bin": {
+    "jee-performance-engine": "src/server.js"
+  },
   "scripts": {
     "start": "node src/server.js",
     "test": "node --test --test-concurrency=1"
