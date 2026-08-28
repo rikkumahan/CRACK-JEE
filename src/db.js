@@ -7,6 +7,7 @@ mkdirSync(dataDir, { recursive: true });
 export const db = new Database(fileURLToPath(new URL("../data/jee.db", import.meta.url)));
 
 db.pragma("journal_mode = WAL");
+db.pragma("busy_timeout = 5000");
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS concepts (
