@@ -11,14 +11,16 @@ concrete next-day action, and verifies whether it worked on the next test.
 Full spec: `ex1.md` at repo root (validated 2026-08-27/29, sound).
 
 ## Current phase
-Step 1 (skeleton MCP server) plan written and saved to
-`docs/superpowers/plans/2026-08-29-skeleton-mcp-server.md`. Execution owner
-is Antigravity, on branch `antigravity/skeleton-mcp-server` in its own
-worktree — Claude Code has not yet run this plan, only authored and
-verified it. Once Antigravity finishes, Claude Code independently verifies
-(see the plan's "Verification Handoff" section) before anything merges.
-Expanded-spec write-up (concept dedup detail + retention-decay formula)
-still not started — comes after step 1 lands.
+Step 1 (skeleton MCP server, built by Antigravity, verified by Claude Code)
+and step 2 (raw logging pipeline, built by Claude Code) are both DONE.
+Server now exposes three tools: `echo`, `list_concepts`, and
+`log_performance_input`, backed by a SQLite schema (`concepts`/`attempts`/
+`error_types`/`attempt_errors`) with concept de-duplication implemented and
+tested end-to-end (see `test/logging.test.js`). Pending merge to `master`
+(human review step).
+
+Retention-decay formula (open question below) still not pinned down —
+not blocking, since it's needed for step 4 (BKT), not step 3.
 
 ## Architecture / key decisions
 - LLM (Qwen's cloud model) used only for extraction + the daily-plan
@@ -50,11 +52,11 @@ still not started — comes after step 1 lands.
 
 ## Backlog
 Build order (ex1.md §12), in sequence:
-1. Skeleton MCP server (not yet in this repo — needs scaffolding here)
-2. Raw logging pipeline: `attempts`/`concepts`/`error_types`/
-   `attempt_errors` tables + `log_performance_input` (incl. concept dedup
-   above) — next real step after expanded spec is written
-3. Descriptive analytics: `get_weak_topics`, `get_recurring_mistakes`
+1. ~~Skeleton MCP server~~ — done (merged)
+2. ~~Raw logging pipeline~~ — done, pending merge (`concepts`/`attempts`/
+   `error_types`/`attempt_errors` + `log_performance_input`/`list_concepts`,
+   concept dedup implemented)
+3. Descriptive analytics: `get_weak_topics`, `get_recurring_mistakes` — next
 4. BKT w/ default params: `student_concept_state`, `get_concept_state`
 5. Concept graph, incremental, chapter-by-chapter
 6. Interventions + outcome tracking: `generate_daily_plan`, `get_progress`
