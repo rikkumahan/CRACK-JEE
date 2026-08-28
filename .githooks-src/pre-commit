@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Worktree-safe pre-commit hook — resolves repo root via rev-parse so it
+# works correctly from any linked worktree, not just the main checkout.
+set -euo pipefail
+ROOT="$(git rev-parse --show-toplevel)"
+
+extract_cmd() {
+  local marker="$1" file="$2" val
+  val="$(sed -n "s/^# ${marker}: //p" "$file" | head -n1 || true)"
+  case "$val" in
+    "e.g."*|"") echo "" ;;
+    *) echo "$val" ;;
+  esac
+}
+
+LINT_CMD=""; TEST_CMD=""
+if [ -f "$ROOT/docs/setup.md" ]; then
+  LINT_CMD="$(extract_cmd LINT_CMD "$ROOT/docs/setup.md")"
+  TEST_CMD="$(extract_cmd TEST_CMD "$ROOT/docs/setup.md")"
+fi
+
+run() {
+  local label="$1"; shift; local cmd="$*"
+  if [ -z "$cmd" ]; then
+    echo "· pre-commit: no $label command set in docs/setup.md — skipping"
+    return 0
+  fi
+  echo "· pre-commit: running $label -> $cmd"
+  ( cd "$ROOT" && eval "$cmd" )
+}
+
+run "lint" "$LINT_CMD"
+run "test" "$TEST_CMD"
+echo "· pre-commit: passed"

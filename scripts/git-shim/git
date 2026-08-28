@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Blocks --no-verify / -n, then delegates to the real git.
+# Enable per shell:  export PATH="$(git rev-parse --show-toplevel)/scripts/git-shim:$PATH"
+set -euo pipefail
+for arg in "$@"; do
+  case "$arg" in
+    --no-verify|-n)
+      echo "blocked: --no-verify / -n is not allowed in this repo." >&2
+      echo "  The pre-commit gate is mandatory. Fix the failure instead." >&2
+      exit 1 ;;
+  esac
+done
+SHIM_DIR="$(cd "$(dirname "$0")" && pwd)"
+REAL_GIT=""
+IFS=':' read -ra PARTS <<< "$PATH"
+for p in "${PARTS[@]}"; do
+  [ "$p" = "$SHIM_DIR" ] && continue
+  if [ -x "$p/git" ]; then REAL_GIT="$p/git"; break; fi
+done
+[ -z "$REAL_GIT" ] && REAL_GIT="/usr/bin/git"
+exec "$REAL_GIT" "$@"

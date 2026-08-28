@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+first_line="$(head -n1 "$1")"
+if ! echo "$first_line" | grep -qE '^(feat|fix|chore|docs|refactor|test)\([a-z0-9-]+\): .+'; then
+  echo "commit message must be: <type>(<tool>): summary" >&2
+  echo "  types: feat fix chore docs refactor test" >&2
+  echo "  e.g.:  fix(claude): handle null session token" >&2
+  exit 1
+fi
