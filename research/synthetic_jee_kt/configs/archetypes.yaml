@@ -1,0 +1,133 @@
+# Heterogeneous Learner Archetypes S01-S10 (per synthetic-learner-spec.md §8)
+
+archetypes:
+  S01:
+    name: "Strong but Careless"
+    initial_mastery_mean: 0.70
+    initial_mastery_std: 0.10
+    learning_rate: 0.22
+    forgetting_rate: 0.03
+    slip_rate: 0.25
+    guess_rate: 0.15
+    baseline_speed: 70.0
+    careless_error_tendency: 0.35
+    time_pressure_sensitivity: 0.15
+    confidence_bias: 0.05
+
+  S02:
+    name: "Weak but Fast Learner"
+    initial_mastery_mean: 0.25
+    initial_mastery_std: 0.08
+    learning_rate: 0.35
+    forgetting_rate: 0.04
+    slip_rate: 0.08
+    guess_rate: 0.20
+    baseline_speed: 85.0
+    careless_error_tendency: 0.10
+    time_pressure_sensitivity: 0.20
+    confidence_bias: -0.05
+
+  S03:
+    name: "Strong Concepts, Poor Time Management"
+    initial_mastery_mean: 0.68
+    initial_mastery_std: 0.10
+    learning_rate: 0.18
+    forgetting_rate: 0.02
+    slip_rate: 0.07
+    guess_rate: 0.10
+    baseline_speed: 150.0
+    careless_error_tendency: 0.08
+    time_pressure_sensitivity: 0.45
+    confidence_bias: 0.0
+
+  S04:
+    name: "Good Memory, High Forgetting"
+    initial_mastery_mean: 0.60
+    initial_mastery_std: 0.10
+    learning_rate: 0.25
+    forgetting_rate: 0.12
+    slip_rate: 0.10
+    guess_rate: 0.15
+    baseline_speed: 90.0
+    careless_error_tendency: 0.12
+    time_pressure_sensitivity: 0.20
+    confidence_bias: 0.0
+
+  S05:
+    name: "Strong Fundamentals, Weak Prerequisites"
+    initial_mastery_mean: 0.45
+    initial_mastery_std: 0.15
+    learning_rate: 0.20
+    forgetting_rate: 0.04
+    slip_rate: 0.12
+    guess_rate: 0.15
+    baseline_speed: 100.0
+    careless_error_tendency: 0.15
+    time_pressure_sensitivity: 0.25
+    confidence_bias: -0.10
+
+  S06:
+    name: "Slow but Accurate"
+    initial_mastery_mean: 0.55
+    initial_mastery_std: 0.10
+    learning_rate: 0.15
+    forgetting_rate: 0.02
+    slip_rate: 0.03
+    guess_rate: 0.08
+    baseline_speed: 140.0
+    careless_error_tendency: 0.02
+    time_pressure_sensitivity: 0.30
+    confidence_bias: -0.05
+
+  S07:
+    name: "High Guessing Tendency"
+    initial_mastery_mean: 0.30
+    initial_mastery_std: 0.10
+    learning_rate: 0.12
+    forgetting_rate: 0.05
+    slip_rate: 0.15
+    guess_rate: 0.38
+    baseline_speed: 60.0
+    careless_error_tendency: 0.20
+    time_pressure_sensitivity: 0.15
+    confidence_bias: 0.10
+
+  S08:
+    name: "Weak Concepts + Overconfidence"
+    initial_mastery_mean: 0.25
+    initial_mastery_std: 0.08
+    learning_rate: 0.10
+    forgetting_rate: 0.06
+    slip_rate: 0.18
+    guess_rate: 0.25
+    baseline_speed: 80.0
+    careless_error_tendency: 0.22
+    time_pressure_sensitivity: 0.20
+    confidence_bias: 0.30
+
+  S09:
+    name: "Good on Easy, Poor on Hard"
+    initial_mastery_mean: 0.50
+    initial_mastery_std: 0.08
+    learning_rate: 0.18
+    forgetting_rate: 0.04
+    slip_rate: 0.10
+    guess_rate: 0.12
+    baseline_speed: 95.0
+    careless_error_tendency: 0.10
+    time_pressure_sensitivity: 0.35
+    confidence_bias: 0.05
+
+  S10:
+    name: "Balanced Standard Learner"
+    initial_mastery_mean: 0.45
+    initial_mastery_std: 0.10
+    learning_rate: 0.18
+    forgetting_rate: 0.03
+    slip_rate: 0.10
+    guess_rate: 0.18
+    baseline_speed: 90.0
+    careless_error_tendency: 0.10
+    time_pressure_sensitivity: 0.20
+    confidence_bias: 0.0
+

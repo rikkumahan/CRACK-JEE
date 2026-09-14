@@ -1,0 +1,91 @@
+# Multiple Synthetic Worlds Configuration (per synthetic-learner-spec.md §5)
+
+worlds:
+  A:
+    name: "BKT-like"
+    description: "Mastery updates in near-linear steps without diminishing returns, high learning rate"
+    learning_dynamics: "linear"
+    learning_rate_multiplier: 1.5
+    grace_days: 14
+    forgetting_rate_multiplier: 1.0
+    slip_rate_multiplier: 1.0
+    guess_rate_multiplier: 1.0
+    prerequisite_gating: false
+    time_pressure_active: false
+
+  B:
+    name: "Strong Forgetting"
+    description: "Grace period halved to 7 days, significantly elevated forgetting rate"
+    learning_dynamics: "diminishing"
+    learning_rate_multiplier: 1.0
+    grace_days: 7
+    forgetting_rate_multiplier: 2.5
+    slip_rate_multiplier: 1.0
+    guess_rate_multiplier: 1.0
+    prerequisite_gating: false
+    time_pressure_active: false
+
+  C:
+    name: "Prerequisite-Dependent"
+    description: "Effective mastery capped by prerequisite concept effective mastery + 0.3"
+    learning_dynamics: "diminishing"
+    learning_rate_multiplier: 1.0
+    grace_days: 14
+    forgetting_rate_multiplier: 1.0
+    slip_rate_multiplier: 1.0
+    guess_rate_multiplier: 1.0
+    prerequisite_gating: true
+    prerequisite_cap: 0.3
+    time_pressure_active: false
+
+  D:
+    name: "High Careless-Error"
+    description: "Elevated slip rates and careless error tendencies"
+    learning_dynamics: "diminishing"
+    learning_rate_multiplier: 1.0
+    grace_days: 14
+    forgetting_rate_multiplier: 1.0
+    slip_rate_multiplier: 2.2
+    guess_rate_multiplier: 1.0
+    prerequisite_gating: false
+    time_pressure_active: false
+
+  E:
+    name: "Time-Pressure"
+    description: "Response-time budget per item; exceeding budget triggers time pressure discount"
+    learning_dynamics: "diminishing"
+    learning_rate_multiplier: 1.0
+    grace_days: 14
+    forgetting_rate_multiplier: 1.0
+    slip_rate_multiplier: 1.0
+    guess_rate_multiplier: 1.0
+    prerequisite_gating: false
+    time_pressure_active: true
+    time_pressure_sensitivity: 0.35
+
+  F:
+    name: "Poorly Calibrated Confidence"
+    description: "High magnitude variance and systematic bias in student confidence"
+    learning_dynamics: "diminishing"
+    learning_rate_multiplier: 1.0
+    grace_days: 14
+    forgetting_rate_multiplier: 1.0
+    slip_rate_multiplier: 1.0
+    guess_rate_multiplier: 1.0
+    prerequisite_gating: false
+    time_pressure_active: false
+    confidence_bias_scale: 0.35
+
+  G:
+    name: "Multi-Concept Interference"
+    description: "High prevalence of multi-concept questions requiring composite mastery"
+    learning_dynamics: "diminishing"
+    learning_rate_multiplier: 1.0
+    grace_days: 14
+    forgetting_rate_multiplier: 1.0
+    slip_rate_multiplier: 1.0
+    guess_rate_multiplier: 1.0
+    prerequisite_gating: false
+    time_pressure_active: false
+    multi_concept_ratio: 0.75
+
