@@ -12,6 +12,11 @@ DB_PATH = Path(__file__).resolve().parent.parent / "data" / "jee.db"
 
 @pytest.mark.asyncio
 async def test_log_performance_input_records_attempt_and_dedups_concepts_stdio():
+    import db
+
+    if db._default_conn is not None:
+        db._default_conn.close()
+        db._default_conn = None
     if DB_PATH.exists():
         try:
             DB_PATH.unlink()

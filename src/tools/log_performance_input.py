@@ -1,7 +1,7 @@
 import time
 from typing import Literal, Optional
 from fastmcp import FastMCP
-from db import get_connection, find_or_create_concept
+from db import get_connection, find_or_create_concept, record_bkt_update
 
 ResultType = Literal["correct", "wrong", "unattempted"]
 ErrorType = Literal[
@@ -59,5 +59,8 @@ def register_log_performance_input(server: FastMCP) -> None:
                 )
 
         conn.commit()
+
+        record_bkt_update(concept_id, result, created_at, conn=conn)
+
         return f'Logged attempt {attempt_id} for concept "{concept}" ({subject}): {result}.'
 

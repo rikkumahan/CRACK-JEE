@@ -5,6 +5,8 @@ import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from bkt import update_mastery, apply_decay, P_L0
+
 DEFAULT_DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 DEFAULT_DB_PATH = DEFAULT_DATA_DIR / "jee.db"
 
@@ -49,6 +51,12 @@ def init_db(db_path: Optional[os.PathLike | str] = None) -> sqlite3.Connection:
         attempt_id INTEGER NOT NULL REFERENCES attempts(id),
         error_type_id INTEGER NOT NULL REFERENCES error_types(id),
         notes TEXT
+      );
+
+      CREATE TABLE IF NOT EXISTS student_concept_state (
+        concept_id INTEGER PRIMARY KEY REFERENCES concepts(id),
+        mastery_probability REAL NOT NULL,
+        last_attempt_at INTEGER NOT NULL
       );
     """)
 
@@ -175,4 +183,78 @@ def get_recurring_mistakes(
         {"concept": row[0], "error_type": row[1], "occurrences": row[2]}
         for row in cursor.fetchall()
     ]
+
+
+def record_bkt_update(
+    concept_id: int,
+    result: str,
+    attempt_time_ms: int,
+    conn: Optional[sqlite3.Connection] = None,
+) -> float:
+    """Applies the BKT posterior update for one attempt and upserts the
+    result into student_concept_state. Called from log_performance_input
+    right after the attempt is inserted."""
+    connection = conn if conn is not None else get_connection()
+    cursor = connection.cursor()
+    cursor.execute(
+        "SELECT mastery_probability FROM student_concept_state WHERE concept_id = ?",
+        (concept_id,),
+    )
+    row = cursor.fetchone()
+    prior = row[0] if row is not None else P_L0
+
+    updated = update_mastery(prior, result)  # type: ignore[arg-type]
+
+    cursor.execute(
+        """
+        INSERT INTO student_concept_state (concept_id, mastery_probability, last_attempt_at)
+        VALUES (?, ?, ?)
+        ON CONFLICT(concept_id) DO UPDATE SET
+            mastery_probability = excluded.mastery_probability,
+            last_attempt_at = excluded.last_attempt_at
+        """,
+        (concept_id, updated, attempt_time_ms),
+    )
+    connection.commit()
+    return updated
+
+
+def get_concept_state(
+    subject: str,
+    concept_id: Optional[int] = None,
+    conn: Optional[sqlite3.Connection] = None,
+    now_ms: Optional[int] = None,
+) -> List[Dict[str, Any]]:
+    """Reads current BKT mastery per concept, with the retention-decay
+    nudge applied at read time (never written back — see bkt.apply_decay)."""
+    connection = conn if conn is not None else get_connection()
+    now = now_ms if now_ms is not None else int(time.time() * 1000)
+
+    query = """
+        SELECT c.id, c.name, s.mastery_probability, s.last_attempt_at
+        FROM student_concept_state s
+        JOIN concepts c ON c.id = s.concept_id
+        WHERE c.subject = ?
+    """
+    params: List[Any] = [subject]
+    if concept_id is not None:
+        query += " AND c.id = ?"
+        params.append(concept_id)
+    query += " ORDER BY c.name"
+
+    cursor = connection.cursor()
+    cursor.execute(query, params)
+
+    result = []
+    for cid, name, mastery, last_attempt_at in cursor.fetchall():
+        days_since = (now - last_attempt_at) / (1000 * 60 * 60 * 24)
+        result.append(
+            {
+                "id": cid,
+                "name": name,
+                "mastery_probability": round(apply_decay(mastery, days_since), 4),
+                "last_attempt_at": last_attempt_at,
+            }
+        )
+    return result
 
