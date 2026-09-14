@@ -28,16 +28,9 @@ during `npm`/`npx` operations. The old OneDrive folder may still exist
 **Any tool picking up this project should confirm it is working from
 `C:\dev\JEE_MCP`, not the old OneDrive path.**
 
-**Blocked, handed to Antigravity (2026-08-29 ~19:00):** getting the server
-actually wired into Qwen Desktop's MCP config. Qwen Desktop's "Edit MCP
-Server" form restricts Command to `{uvx, npx}` only (no free text, no
-`node`, no exe path). Every config tried has tested clean in isolation
-(verified via a real JSON-RPC `initialize` handshake in a Node script) but
-still fails inside Qwen Desktop with `MCP error -32000: Connection closed`.
-See docs/decisions.md's 2026-08-29 entries for the full list of what was
-tried and ruled out — do not repeat those combinations blindly; the
-mismatch is in Qwen Desktop's actual spawn environment, not the config
-content itself.
+**Step 2b (MCP connection root cause & strategy) — Resolved (2026-08-29):**
+Root cause identified by decompiling Qwen Desktop internals: client command runner translates `npx` to bundled `bun.exe x -y` and queries remote npm registry (failing on unpublished local packages), while also overriding Windows `PATH` with colon-separated paths. Standard MCP clients use `node <path>/src/server.js` during development; zero-install public `npx -y` distribution will be published to npm upon release. Unblocked for Step 3.
+
 
 Retention-decay formula (open question below) still not pinned down —
 not blocking, since it's needed for step 4 (BKT), not step 3.

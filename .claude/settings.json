@@ -3,6 +3,9 @@
     "deny": [
       "Bash(git commit --no-verify:*)",
       "Bash(git commit -n:*)"
+    ],
+    "allow": [
+      "WebFetch(domain:www.producthunt.com)"
     ]
   }
 }
