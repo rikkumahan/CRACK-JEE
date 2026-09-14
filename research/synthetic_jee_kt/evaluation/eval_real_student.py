@@ -134,60 +134,64 @@ def evaluate_on_real_student(
 
 
 def format_real_eval_report(results: Dict[str, Any]) -> str:
-    """Generates markdown report of the real student evaluation."""
+    """Generates rigorous markdown report of the real student evaluation."""
     lines = [
         "# Real-World Knowledge Tracing Validation Report",
         "",
-        f"**Date:** {results['timestamp'][:10]} | **Evaluator:** Antigravity | **Status:** Validated",
+        f"**Date:** {results['timestamp'][:10]} | **Evaluator:** Antigravity | **Status:** Corrected per Protocol §2",
         "",
-        "## 1. Executive Summary",
+        "## 1. Executive Summary & Protocol Alignment",
         "",
-        f"Evaluates zero-shot transfer of the pre-trained **LKT model** (trained on 35,000 synthetic JEE interactions) and **BKT** on real-world JEE mock exam attempts ({results['total_attempts']} questions across GTM08 -> GTM10 -> GTM06).",
-        f"- **Actual Student Accuracy:** {results['actual_accuracy']*100:.1f}%",
+        f"Evaluates transfer of pre-trained **LKT** (trained on 35,000 synthetic items) and **BKT** against real student attempts ({results['total_attempts']} questions across GTM08 -> GTM10 -> GTM06).",
         "",
-        "## 2. Model Performance Comparison",
+        "### Key Methodological Findings:",
+        "1. **Zero Concept Overlap:** Exactly 0 of the 49 distinct concepts in the real student data match the 1,029 eQOURSE concept IDs in the synthetic dataset. LKT's learned concept-specific parameters (intercepts, success/failure count weights) were completely inactive; LKT operated purely as a global-feature fallback.",
+        "2. **Primary Metric (AUC per Protocol §2):** Neither model demonstrates real discriminative ranking power on this concept-mismatched, 74-sample slice. LKT's raw AUC is sub-chance (**0.4593**), while BKT default is marginally above chance (**0.5139**).",
+        "3. **Flat Predicted Probability Spread:** LKT's average predicted probability on Correct vs. Wrong answers was essentially flat (**0.524** on Correct vs. **0.516** on Wrong, a 0.008 delta). Furthermore, predicted probabilities across Easy/Medium/Hard spanned only 7.6 percentage points (0.466 to 0.542), failing to reflect the student's actual 29-point accuracy spread (53.3% to 82.4%).",
+        "4. **Thresholding Caveat:** At its natural decision threshold (0.50), LKT achieves **50.0% accuracy** (worse than the majority-class baseline of 73.0% and the Recent-5 baseline of 70.3%). The previously noted 71.6% figure was obtained via post-hoc threshold selection (0.45) using known test labels, and is not a valid generalization metric.",
         "",
-        "| Model | Accuracy | Log Loss | RMSE | Brier Score | AUC |",
+        "## 2. Model Performance Comparison (Primary Metric: AUC)",
+        "",
+        "| Model | AUC (Primary) | Accuracy (Natural 0.50) | Log Loss | RMSE | Brier Score |",
         "|---|---|---|---|---|---|",
     ]
 
     m_data = results["models"]
     for m_name, d in [
-        ("Recent-5 Baseline", m_data["baseline"]),
         ("BKT (Literature Default)", m_data["bkt_default"]),
         ("Pre-trained LKT (Ours)", m_data["pretrained_lkt"]),
+        ("Recent-5 Baseline", m_data["baseline"]),
     ]:
+        auc = d.get("auc", 0.5)
         acc = d.get("accuracy", 0.0) * 100
         ll = d.get("log_loss", 0.0)
         rmse = d.get("rmse", 0.0)
         brier = d.get("brier", 0.0)
-        auc = d.get("auc", 0.5)
-        lines.append(f"| **{m_name}** | {acc:.1f}% | {ll:.4f} | {rmse:.4f} | {brier:.4f} | {auc:.4f} |")
+        lines.append(f"| **{m_name}** | **{auc:.4f}** | {acc:.1f}% | {ll:.4f} | {rmse:.4f} | {brier:.4f} |")
 
     lines.extend([
         "",
-        "*(Note: At base threshold 0.45 calibrated to the student's base ability, Pre-trained LKT achieves **71.6%** accuracy, closely tracking the student's true 73.0% accuracy).* ",
+        "> [!NOTE]",
+        "> Post-hoc threshold tuning (sweeping thresholds [0.45, 0.47, 0.48, 0.50] after observing test labels) can shift LKT's apparent accuracy to 71.6% at 0.45, but this relies on test label leakage and does not reflect model discriminative ability.",
         "",
-        "## 3. Pre-trained LKT Difficulty Calibration",
+        "## 3. Pre-trained LKT Difficulty Calibration (Predicted vs. Actual)",
         "",
-        "Demonstrates that pre-trained LKT dynamically scales predictions based on problem difficulty:",
-        "",
-        "| Difficulty Level | Attempts | Actual Student Accuracy | LKT Predicted Prob |",
-        "|---|---|---|---|",
+        "| Difficulty Level | Attempts | Actual Student Accuracy | LKT Predicted Prob | Spread Comparison |",
+        "|---|---|---|---|---|",
     ])
 
     for diff_name, d in results["lkt_difficulty_calibration"].items():
         lines.append(
-            f"| **{diff_name}** | {d['count']} | {d['actual_accuracy']*100:.1f}% | {d['predicted_mean_prob']:.3f} |"
+            f"| **{diff_name}** | {d['count']} | {d['actual_accuracy']*100:.1f}% | {d['predicted_mean_prob']:.3f} | Actual spans 29.1%, Pred spans 7.6% |"
         )
 
     lines.extend([
         "",
         "## 4. Architectural Conclusions for MCP Server",
         "",
-        "1. **Pre-trained LKT outperforms BKT on every probabilistic metric:** Pre-trained LKT achieves lower Log Loss (0.6851 vs 0.7764), lower RMSE (0.4955 vs 0.5376), and 15% lower Brier Score (0.2455 vs 0.2891).",
-        "2. **Zero-Shot Generalization:** Even though the real student's concepts used different naming than eQOURSE, LKT's learned cognitive weights (difficulty coefficient beta=-0.12, memory decay beta=-0.22, global success beta=+2.07) transferred effectively.",
-        "3. **Hybrid Architecture Confirmed:** Use BKT for single-concept mastery explainability ($P(M)$ from 0 to 1), and pre-trained LKT for next-question outcome prediction ($P(\\text{Correct})$).",
+        "1. **No Evidence to Reopen ex1.md §7.2:** 74 attempts from a single student on concept-mismatched data does not justify changing the production MCP architecture or deploying LKT in `src/`.",
+        "2. **Production MCP Server Stays Fixed-Parameter BKT:** As decided in `ex1.md §7.2` and reaffirmed in `research-validation-report.md`, the production MCP server must retain fixed literature-default BKT for single-student mastery tracking.",
+        "3. **Research Track Remains Independent:** Pre-trained LKT's strong performance on the 35k-interaction population benchmark (AUC 0.6707) demonstrates its theoretical value for multi-student cohorts, but transfer to zero-overlap, single-student data cannot be claimed from this experiment.",
     ])
 
     return "\n".join(lines)
