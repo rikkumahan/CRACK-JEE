@@ -1,0 +1,224 @@
+question_id,required_skills,difficulty,question_type,negative_marking,expected_time_sec,distractor_map,status,my_time_sec
+GTM08_PHY_01,Newtons_Laws|Spring_Force|Kinematics,Hard,MCQ_Single,True,120,{},Skipped,99
+GTM08_PHY_02,Projectile_Motion|Centre_of_Mass|Conservation_of_Momentum,Medium,MCQ_Single,True,120,{},Skipped,10
+GTM08_PHY_03,Magnetic_Effects_of_Current,Hard,MCQ_Single,True,120,{},Skipped,97
+GTM08_PHY_04,Fluid_Dynamics|Kinematics,Hard,MCQ_Single,True,120,"{""A"": ""Ignored_Platform_Height"", ""B"": ""Torricelli_Square_Root_Error"", ""C"": ""Misread_Depth_Variable""}",Wrong,46
+GTM08_PHY_05,Calorimetry|Latent_Heat,Hard,MCQ_Single,True,120,{},Skipped,220
+GTM08_PHY_06,Waves_on_a_String|Standing_Waves,Hard,MCQ_Single,True,120,{},Skipped,12
+GTM08_PHY_07,Electrostatics|Gauss_Law,Hard,MCQ_Single,True,120,{},Skipped,38
+GTM08_PHY_08,Electromagnetic_Induction|LC_Oscillations,Easy,MCQ_Single,True,120,{},Correct,106
+GTM08_PHY_09,Ray_Optics|Lenses,Hard,MCQ_Single,True,120,{},Skipped,100
+GTM08_PHY_10,Units_and_Dimensions|Screw_Gauge,Hard,MCQ_Single,True,120,{},Skipped,16
+GTM08_PHY_11,Rotational_Dynamics|Friction|Torque,Hard,MCQ_Single,True,120,{},Skipped,76
+GTM08_PHY_12,Thermodynamics|Polytropic_Process,Easy,MCQ_Single,True,120,{},Skipped,67
+GTM08_PHY_13,Gravitation|Gravitational_Field,Medium,MCQ_Single,True,120,{},Skipped,15
+GTM08_PHY_14,Work_Energy_Power|Circular_Motion,Hard,MCQ_Single,True,120,{},Skipped,116
+GTM08_PHY_15,Wave_Optics|YDSE,Hard,MCQ_Single,True,120,"{""A"": ""Path_Difference_Sign_Error"", ""C"": ""Ignored_Refractive_Index"", ""D"": ""Fringe_Width_Formula_Error""}",Wrong,69
+GTM08_PHY_16,Fluid_Mechanics|Bernoullis_Principle,Hard,MCQ_Single,True,120,{},Skipped,45
+GTM08_PHY_17,Electrostatics|Gauss_Law,Hard,MCQ_Single,True,120,{},Correct,105
+GTM08_PHY_18,Electrostatics|Conductors_and_Dielectrics,Hard,MCQ_Single,True,120,{},Skipped,13
+GTM08_PHY_19,Current_Electricity|Kirchhoffs_Laws,Hard,MCQ_Single,True,120,{},Skipped,2
+GTM08_PHY_20,Alternating_Current|Reactance,Medium,MCQ_Single,True,120,{},Skipped,109
+GTM08_PHY_21,Radiation_Pressure|Dual_Nature_of_Matter,Hard,Numeric,False,180,{},Skipped,13
+GTM08_PHY_22,Electromagnetic_Induction|Mutual_Inductance,Medium,Numeric,False,180,{},Skipped,390
+GTM08_PHY_23,Gravitation|Gravitational_Potential|Infinite_Series,Hard,Numeric,False,180,{},Skipped,142
+GTM08_PHY_24,Electromagnetic_Waves,Hard,Numeric,False,180,{},Skipped,104
+GTM08_PHY_25,Current_Electricity,Hard,Numeric,False,180,{},Skipped,247
+GTM08_CHEM_26,Mole_Concept|Equivalent_Weight,Medium,MCQ_Single,True,120,{},Correct,358
+GTM08_CHEM_27,Atomic_Structure|Quantum_Numbers,Easy,MCQ_Single,True,120,{},Correct,23
+GTM08_CHEM_28,Chemical_Bonding|VSEPR_Theory|Hybridization,Easy,MCQ_Single,True,120,{},Correct,180
+GTM08_CHEM_29,Chemical_Bonding|Molecular_Orbital_Theory,Easy,MCQ_Single,True,120,{},Correct,82
+GTM08_CHEM_31,Liquid_Solutions|Osmotic_Pressure|Vant_Hoff_Factor,Medium,MCQ_Single,True,120,{},Skipped,130
+GTM08_CHEM_32,Biomolecules|Nucleic_Acids,Hard,MCQ_Single,True,120,{},Skipped,44
+GTM08_CHEM_33,Thermodynamics|Carnot_Cycle,Hard,MCQ_Single,True,120,"{""A"": ""Efficiency_Formula_Inverted"", ""C"": ""Kelvin_Conversion_Error"", ""D"": ""Work_Heat_Confusion""}",Wrong,324
+GTM08_CHEM_34,Salt_Analysis|Group_1_Cations,Medium,MCQ_Single,True,120,{},Correct,54
+GTM08_CHEM_36,Coordination_Compounds|Magnetic_Properties|d_Block_Elements,Easy,MCQ_Single,True,120,{},Correct,206
+GTM08_CHEM_37,Biomolecules|Amino_Acids|Peptides,Hard,MCQ_Single,True,120,{},Skipped,32
+GTM08_CHEM_38,Coordination_Compounds|Crystal_Field_Theory|Spectrochemical_Series,Medium,MCQ_Single,True,120,{},Correct,92
+GTM08_CHEM_39,Liquid_Solutions|Raoults_Law,Medium,MCQ_Single,True,120,{},Skipped,253
+GTM08_CHEM_40,Amines|Basic_Character,Easy,MCQ_Single,True,120,{},Correct,83
+GTM08_CHEM_41,IUPAC_Nomenclature,Hard,MCQ_Single,True,120,{},Skipped,107
+GTM08_CHEM_42,IUPAC_Nomenclature|Alkyl_Halides,Medium,MCQ_Single,True,120,"{""A"": ""Numbering_From_Wrong_End"", ""B"": ""Substituent_Priority_Ignored"", ""D"": ""Alphabetical_Order_Error""}",Wrong,140
+GTM08_CHEM_43,Aldehydes_and_Ketones|Reduction_Reactions,Medium,MCQ_Single,True,120,"{""B"": ""Over_Reduction_To_Alcohol"", ""C"": ""Ester_Cleavage_Error"", ""D"": ""Double_Bond_Reduced""}",Wrong,57
+GTM08_CHEM_44,General_Organic_Chemistry|Carbocation_Stability,Easy,MCQ_Single,True,120,{},Correct,49
+GTM08_CHEM_45,Coordination_Compounds|Valence_Bond_Theory,Medium,MCQ_Single,True,120,"{""A"": ""Strong_Field_Ligand_Assumption"", ""B"": ""Ignored_Hybridization_State"", ""D"": ""Spin_Pairing_Error""}",Wrong,176
+GTM08_CHEM_46,Chemical_Bonding,Medium,Numeric,False,180,{},Correct,519
+GTM08_CHEM_47,Thermodynamics|Bond_Energy,Medium,Numeric,False,180,{},Correct,113
+GTM08_CHEM_48,Quantitative_Analysis|Nitrogen_Estimation,Medium,Numeric,False,180,{},Correct,106
+GTM08_CHEM_49,Electrochemistry|Faradays_Laws,Hard,Numeric,False,180,{},Skipped,27
+GTM08_CHEM_50,Stoichiometry,Hard,Numeric,False,180,{},Skipped,23
+GTM08_MATH_51,Application_of_Derivatives|Tangents_and_Normals,Medium,MCQ_Single,True,120,"{""A"": ""Chain_Rule_Error"", ""C"": ""Sign_Error_In_Derivative"", ""D"": ""Product_Rule_Ignored""}",Wrong,341
+GTM08_MATH_52,Quadratic_Equations|Location_of_Roots,Medium,MCQ_Single,True,120,{},Skipped,238
+GTM08_MATH_53,Coordinate_Geometry|Hyperbola|Locus,Hard,MCQ_Single,True,120,{},Skipped,7
+GTM08_MATH_54,Permutations_and_Combinations|Probability,Easy,MCQ_Single,True,120,{},Correct,121
+GTM08_MATH_55,Application_of_Derivatives|Maxima_and_Minima,Hard,MCQ_Single,True,120,{},Skipped,701
+GTM08_MATH_56,Vector_Algebra|Projection_of_Vectors,Hard,MCQ_Single,True,120,{},Skipped,43
+GTM08_MATH_57,Matrices|Determinants,Medium,MCQ_Single,True,120,{},Correct,654
+GTM08_MATH_58,Coordinate_Geometry|Parabola,Medium,MCQ_Single,True,120,{},Skipped,4
+GTM08_MATH_59,Coordinate_Geometry|Ellipse|Maxima_and_Minima,Medium,MCQ_Single,True,120,{},Skipped,5
+GTM08_MATH_60,3D_Geometry|Shortest_Distance,Hard,MCQ_Single,True,120,{},Skipped,3
+GTM08_MATH_61,Calculus|Limits,Hard,MCQ_Single,True,120,{},Skipped,38
+GTM08_MATH_62,Integral_Calculus|Area_Under_Curves,Medium,MCQ_Single,True,120,{},Skipped,2
+GTM08_MATH_63,Trigonometry|Trigonometric_Equations,Hard,MCQ_Single,True,120,{},Skipped,3
+GTM08_MATH_64,Complex_Numbers,Hard,MCQ_Single,True,120,{},Skipped,5
+GTM08_MATH_65,Algebra|Binomial_Theorem,Hard,MCQ_Single,True,120,{},Skipped,2
+GTM08_MATH_66,Coordinate_Geometry|Circles,Hard,MCQ_Single,True,120,{},Skipped,34
+GTM08_MATH_67,Integral_Calculus|Definite_Integration,Hard,MCQ_Single,True,120,{},Correct,530
+GTM08_MATH_68,Matrices|Adjoint_and_Inverse,Hard,MCQ_Single,True,120,{},Skipped,9
+GTM08_MATH_69,Sets_and_Relations,Medium,MCQ_Single,True,120,{},Skipped,48
+GTM08_MATH_70,Coordinate_Geometry|Distance_Formula,Medium,MCQ_Single,True,120,{},Skipped,115
+GTM08_MATH_71,Matrices|System_of_Equations,Easy,Numeric,False,180,{},Skipped,88
+GTM08_MATH_72,Trigonometry|Identities,Medium,Numeric,False,180,{},Correct,260
+GTM08_MATH_73,Algebra|Binomial_Theorem,Hard,Numeric,False,180,{},Correct,349
+GTM08_MATH_74,Differential_Equations,Medium,Numeric,False,180,{},Correct,261
+GTM08_MATH_75,Probability|Expectation,Hard,Numeric,False,180,{},Skipped,54
+GTM10_PHY_01,Thermodynamics|Kinetic_Theory_of_Gases,Hard,MCQ_Single,True,120,{},Not Visited,0
+GTM10_PHY_02,Gravitation|Acceleration_due_to_gravity,Hard,MCQ_Single,True,120,{},Skipped,3
+GTM10_PHY_03,Modern_Physics|Photoelectric_Effect,Hard,MCQ_Single,True,120,{},Skipped,20
+GTM10_PHY_04,Fluid_Mechanics|Surface_Tension,Hard,MCQ_Single,True,120,{},Skipped,129
+GTM10_PHY_05,Kinematics|Projectile_Motion,Hard,MCQ_Single,True,120,{},Skipped,4
+GTM10_PHY_06,Alternating_Current|LCR_Circuit,Hard,MCQ_Single,True,120,{},Skipped,131
+GTM10_PHY_07,Circular_Motion|Friction,Hard,MCQ_Single,True,120,{},Skipped,12
+GTM10_PHY_08,Electrostatics|Coulombs_Law,Hard,MCQ_Single,True,120,{},Skipped,1
+GTM10_PHY_09,Electromagnetic_Induction|Inductor,Hard,MCQ_Single,True,120,{},Not Visited,0
+GTM10_PHY_10,Ray_Optics|Lenses,Hard,MCQ_Single,True,120,{},Skipped,85
+GTM10_PHY_11,Kinetic_Theory_of_Gases|Kinetic_Energy,Medium,MCQ_Single,True,120,{},Correct,438
+GTM10_PHY_12,General_Physics,Medium,MCQ_Single,True,120,{},Correct,83
+GTM10_PHY_13,General_Physics,Hard,MCQ_Single,True,120,{},Skipped,3
+GTM10_PHY_14,Current_Electricity|Power,Hard,MCQ_Single,True,120,{},Skipped,24
+GTM10_PHY_15,Work_Energy_Power|Momentum,Hard,MCQ_Single,True,120,{},Skipped,89
+GTM10_PHY_16,Fluid_Mechanics|Drops_and_Bubbles,Hard,MCQ_Single,True,120,{},Skipped,1
+GTM10_PHY_17,Magnetic_Effects_of_Current|Amperes_Law,Medium,MCQ_Single,True,120,{},Correct,156
+GTM10_PHY_18,Electromagnetic_Induction|Eddy_Currents,Hard,MCQ_Single,True,120,{},Skipped,17
+GTM10_PHY_19,Units_and_Dimensions,Hard,MCQ_Single,True,120,{},Not Visited,0
+GTM10_PHY_20,Kinematics|Motion_in_2D,Hard,MCQ_Single,True,120,{},Skipped,15
+GTM10_PHY_21,Electrostatics|Electric_Field,Hard,Numeric,False,180,{},Skipped,58
+GTM10_PHY_22,Alternating_Current|LCR_Circuit,Hard,Numeric,False,180,{},Wrong,229
+GTM10_PHY_23,Kinematics|Calculus_in_Kinematics,Medium,Numeric,False,180,{},Correct,73
+GTM10_PHY_24,Rotational_Dynamics|Moment_of_Inertia,Hard,Numeric,False,180,{},Wrong,91
+GTM10_PHY_25,Magnetism|Magnetic_Moment,Hard,Numeric,False,180,{},Skipped,2
+GTM10_CHEM_26,Organic_Chemistry|Electrophilic_Aromatic_Substitution,Medium,MCQ_Single,True,120,{},Correct,25
+GTM10_CHEM_27,Mole_Concept|Concentration_Terms,Medium,MCQ_Single,True,120,{},Correct,128
+GTM10_CHEM_28,Liquid_Solutions|Henrys_Law,Medium,MCQ_Single,True,120,"{""B"": ""Assumed_Endothermic_Dissolution"", ""C"": ""Ignored_Temperature_Dependence"", ""D"": ""Ignored_Both_Dependencies""}",Wrong,25
+GTM10_CHEM_29,Mole_Concept,Hard,MCQ_Single,True,120,{},Skipped,314
+GTM10_CHEM_30,d_Block_Elements|Chromyl_Chloride_Test,Hard,MCQ_Single,True,120,{},Skipped,3
+GTM10_CHEM_31,General_Chemistry,Hard,MCQ_Single,True,120,{},Skipped,4
+GTM10_CHEM_32,d_Block_Elements|Magnetic_Properties,Hard,MCQ_Single,True,120,{},Skipped,30
+GTM10_CHEM_33,General_Chemistry,Medium,MCQ_Single,True,120,{},Correct,29
+GTM10_CHEM_34,Amines|Diazonium_Salts,Hard,MCQ_Single,True,120,{},Skipped,11
+GTM10_CHEM_35,Aldehydes_and_Ketones|Cannizzaro_Reaction,Medium,MCQ_Single,True,120,"{""A"": ""Intramolecular_Reaction_Ignored"", ""B"": ""Aldol_Product_Formed"", ""C"": ""Esterification_Without_Reduction""}",Wrong,56
+GTM10_CHEM_36,Chemical_Bonding|VSEPR_Theory,Hard,MCQ_Single,True,120,{},Skipped,80
+GTM10_CHEM_37,Ionic_Equilibrium|Buffer_Solutions,Hard,MCQ_Single,True,120,{},Skipped,19
+GTM10_CHEM_38,Aldehydes_and_Ketones|Grignard_Reagent,Medium,MCQ_Single,True,120,{},Correct,240
+GTM10_CHEM_39,General_Chemistry,Hard,MCQ_Single,True,120,{},Skipped,1
+GTM10_CHEM_40,Organic_Chemistry|Electrophilic_Aromatic_Substitution,Medium,MCQ_Single,True,120,"{""A"": ""Rearrangement_Ignored"", ""B"": ""Meta_Directing_Effect_Assumed"", ""C"": ""Steric_Hindrance_Ignored""}",Wrong,13
+GTM10_CHEM_41,General_Chemistry,Hard,MCQ_Single,True,120,{},Skipped,27
+GTM10_CHEM_42,General_Chemistry,Medium,MCQ_Single,True,120,{},Correct,775
+GTM10_CHEM_43,General_Chemistry,Hard,MCQ_Single,True,120,{},Skipped,10
+GTM10_CHEM_44,Aldehydes_and_Ketones|Cyanohydrin,Hard,MCQ_Single,True,120,{},Skipped,7
+GTM10_CHEM_45,Coordination_Compounds|Crystal_Field_Theory,Medium,MCQ_Single,True,120,{},Correct,271
+GTM10_CHEM_46,Chemical_Equilibrium,Hard,Numeric,False,180,{},Skipped,209
+GTM10_CHEM_47,Liquid_Solutions|Vant_Hoff_Factor,Hard,Numeric,False,180,{},Skipped,2
+GTM10_CHEM_48,Thermodynamics|Gibbs_Free_Energy,Hard,Numeric,False,180,{},Skipped,5
+GTM10_CHEM_49,Atomic_Structure|Bohr_Model,Medium,Numeric,False,180,{},Correct,69
+GTM10_CHEM_50,Chemical_Kinetics|Zero_Order_Reactions,Hard,Numeric,False,180,{},Skipped,15
+GTM10_MATH_51,Sequence_and_Series|Geometry,Hard,MCQ_Single,True,120,{},Skipped,27
+GTM10_MATH_52,Statistics|Variance,Medium,MCQ_Single,True,120,{},Correct,62
+GTM10_MATH_53,Probability|Combinatorics,Hard,MCQ_Single,True,120,{},Skipped,9
+GTM10_MATH_54,Differential_Equations|Exact_Differentials,Hard,MCQ_Single,True,120,{},Skipped,3
+GTM10_MATH_55,Coordinate_Geometry|Circles|Properties_of_Triangles,Medium,MCQ_Single,True,120,{},Correct,253
+GTM10_MATH_56,Binomial_Theorem|Limits,Hard,MCQ_Single,True,120,{},Skipped,124
+GTM10_MATH_57,Binomial_Theorem,Hard,MCQ_Single,True,120,{},Skipped,14
+GTM10_MATH_58,Binomial_Theorem,Hard,MCQ_Single,True,120,{},Skipped,16
+GTM10_MATH_59,Complex_Numbers,Medium,MCQ_Single,True,120,{},Correct,500
+GTM10_MATH_60,Application_of_Derivatives|Maxima_and_Minima,Hard,MCQ_Single,True,120,{},Skipped,227
+GTM10_MATH_61,Matrices|System_of_Equations,Hard,MCQ_Single,True,120,{},Skipped,20
+GTM10_MATH_62,Permutations_and_Combinations|Dictionary_Rank,Hard,MCQ_Single,True,120,{},Skipped,13
+GTM10_MATH_63,Functions|Limits,Medium,MCQ_Single,True,120,{},Correct,596
+GTM10_MATH_64,Coordinate_Geometry|Ellipse|Application_of_Derivatives,Medium,MCQ_Single,True,120,{},Correct,518
+GTM10_MATH_65,Determinants,Hard,MCQ_Single,True,120,{},Skipped,4
+GTM10_MATH_66,Trigonometry,Hard,MCQ_Single,True,120,{},Skipped,10
+GTM10_MATH_67,Vector_Algebra,Medium,MCQ_Single,True,120,{},Correct,518
+GTM10_MATH_68,Integral_Calculus|Area_Under_Curves,Medium,MCQ_Single,True,120,{},Correct,1302
+GTM10_MATH_69,Integral_Calculus|Definite_Integration,Hard,MCQ_Single,True,120,{},Skipped,22
+GTM10_MATH_70,Calculus|Continuity,Hard,MCQ_Single,True,120,{},Skipped,1493
+GTM10_MATH_71,Calculus|Continuity,Hard,Numeric,False,180,{},Skipped,6
+GTM10_MATH_72,Calculus|Limits,Hard,Numeric,False,180,{},Skipped,8
+GTM10_MATH_73,Probability|Random_Variables,Hard,Numeric,False,180,{},Skipped,24
+GTM10_MATH_74,3D_Geometry|Lines,Hard,Numeric,False,180,{},Skipped,5
+GTM10_MATH_75,Determinants|System_of_Equations,Medium,Numeric,False,180,{},Correct,323
+GTM06_PHY_01,Capacitors|Series_Combination,Medium,MCQ_Single,True,120,"{""A"": ""Assumed_Inverse_Ratio"", ""C"": ""Misread_Graph_Intercepts"", ""D"": ""Ignored_Potential_Drop""}",Wrong,0
+GTM06_PHY_02,Fluid_Mechanics|Viscosity|Terminal_Velocity,Medium,MCQ_Single,True,120,{},Not Visited,0
+GTM06_PHY_03,Electrostatics|Electric_Potential|Gradient,Medium,MCQ_Single,True,120,{},Not Visited,0
+GTM06_PHY_04,Electrostatics|Equipotential_Surfaces,Easy,MCQ_Single,True,120,{},Not Visited,0
+GTM06_PHY_05,Ray_Optics|Refraction_at_Spherical_Surfaces|Snells_Law,Easy,MCQ_Single,True,120,{},Not Visited,0
+GTM06_PHY_06,Magnetic_Effects_of_Current|Lorentz_Force,Easy,MCQ_Single,True,120,{},Not Visited,0
+GTM06_PHY_07,Deleted,Medium,MCQ_Single,True,120,{},Deleted,0
+GTM06_PHY_08,Thermodynamics|First_Law_of_Thermodynamics|Cyclic_Process,Hard,MCQ_Single,True,120,{},Correct,0
+GTM06_PHY_09,Waves_and_Sound|Speed_of_Sound|Temperature_Dependence,Easy,MCQ_Single,True,120,{},Correct,0
+GTM06_PHY_10,Work_Energy_Power|Vertical_Circular_Motion,Hard,MCQ_Single,True,120,{},Not Visited,0
+GTM06_PHY_11,Work_Energy_Power|Non_Conservative_Forces,Easy,MCQ_Single,True,120,{},Not Visited,0
+GTM06_PHY_12,Modern_Physics|Radioactivity|Alpha_Beta_Decay,Easy,MCQ_Single,True,120,{},Not Visited,0
+GTM06_PHY_13,Semiconductors|Logic_Gates,Hard,MCQ_Single,True,120,{},Correct,0
+GTM06_PHY_14,Current_Electricity|Resistor_Combinations,Easy,MCQ_Single,True,120,"{""B"": ""Squared_Term_Error"", ""C"": ""Denominator_Error"", ""D"": ""Ignored_Series_Parallel_Split""}",Wrong,0
+GTM06_PHY_15,Current_Electricity|Symmetry_in_Circuits,Medium,MCQ_Single,True,120,{},Not Visited,0
+GTM06_PHY_16,Deleted,Medium,MCQ_Single,True,120,{},Deleted,0
+GTM06_PHY_17,Electrostatics|Energy_Density,Hard,MCQ_Single,True,120,{},Not Visited,0
+GTM06_PHY_18,Electrostatics|Electric_Potential|Ring,Easy,MCQ_Single,True,120,{},Not Visited,0
+GTM06_PHY_19,Dual_Nature_of_Matter|De_Broglie_Wavelength,Medium,MCQ_Single,True,120,{},Not Visited,0
+GTM06_PHY_20,Ray_Optics|Prism|Snells_Law,Hard,MCQ_Single,True,120,{},Not Visited,0
+GTM06_PHY_21,Units_and_Dimensions|Screw_Gauge,Medium,Numeric,False,180,{},Not Visited,0
+GTM06_PHY_22,Rotational_Dynamics|Moment_of_Inertia,Medium,Numeric,False,180,{},Not Visited,0
+GTM06_PHY_23,Units_and_Dimensions|Angular_Momentum,Easy,Numeric,False,180,{},Correct,0
+GTM06_PHY_24,Rotational_Dynamics|Moment_of_Inertia|Cavity_Problems,Hard,Numeric,False,180,{},Not Visited,0
+GTM06_PHY_25,Wave_Optics|YDSE,Medium,Numeric,False,180,{},Not Visited,0
+GTM06_CHEM_26,p_Block_Elements|Boron_Family,Easy,MCQ_Single,True,120,"{""A"": ""Factual_Error_Boiling_Point"", ""B"": ""Ignored_Network_Structure"", ""C"": ""Inert_Pair_Effect_Confusion""}",Wrong,0
+GTM06_CHEM_27,General_Organic_Chemistry|Carbocation_Stability,Medium,MCQ_Single,True,120,"{""B"": ""Ignored_Anti_Aromaticity"", ""C"": ""Confused_Bridgehead_Stability"", ""D"": ""Misjudged_Resonance""}",Wrong,0
+GTM06_CHEM_28,Carboxylic_Acids|Sodium_Bicarbonate_Test,Medium,MCQ_Single,True,120,{},Not Visited,0
+GTM06_CHEM_29,General_Chemistry,Medium,MCQ_Single,True,120,{},Not Visited,0
+GTM06_CHEM_30,Biomolecules|Carbohydrates,Medium,MCQ_Single,True,120,"{""A"": ""Both_Statements_Ignored"", ""B"": ""Glycosidic_Linkage_Error"", ""C"": ""Assumed_Heptane_Is_Correct""}",Wrong,0
+GTM06_CHEM_31,Aldehydes_and_Ketones|Iodoform_Test|Fehlings_Test,Medium,MCQ_Single,True,120,{},Not Visited,0
+GTM06_CHEM_32,Atomic_Structure|Quantum_Numbers,Easy,MCQ_Single,True,120,{},Correct,0
+GTM06_CHEM_33,d_Block_Elements|Potassium_Dichromate,Hard,MCQ_Single,True,120,{},Correct,0
+GTM06_CHEM_34,Amines|Diazotization,Easy,MCQ_Single,True,120,{},Not Visited,0
+GTM06_CHEM_35,Liquid_Solutions|Depression_in_Freezing_Point|Elevation_in_Boiling_Point,Hard,MCQ_Single,True,120,{},Not Visited,0
+GTM06_CHEM_36,Liquid_Solutions|Freezing_Point,Hard,MCQ_Single,True,120,{},Correct,0
+GTM06_CHEM_37,Chemical_Kinetics|Rate_Law,Medium,MCQ_Single,True,120,{},Not Visited,0
+GTM06_CHEM_38,Chemical_Kinetics|Half_Life|First_Order_Reactions,Medium,MCQ_Single,True,120,{},Not Visited,0
+GTM06_CHEM_39,Chemical_Bonding|VSEPR_Theory,Medium,MCQ_Single,True,120,{},Correct,0
+GTM06_CHEM_40,Chemical_Bonding|VSEPR_Theory|Shapes_of_Molecules,Easy,MCQ_Single,True,120,"{""A"": ""Bent_Shape_Ignored"", ""C"": ""See_Saw_Ignored"", ""D"": ""T_Shape_Ignored""}",Wrong,0
+GTM06_CHEM_41,Periodic_Properties|Ionic_Radii,Hard,MCQ_Single,True,120,{},Correct,0
+GTM06_CHEM_42,General_Chemistry,Medium,MCQ_Single,True,120,{},Correct,0
+GTM06_CHEM_43,General_Chemistry,Easy,MCQ_Single,True,120,{},Correct,0
+GTM06_CHEM_44,General_Chemistry,Easy,MCQ_Single,True,120,{},Not Visited,0
+GTM06_CHEM_45,Ionic_Equilibrium|pH_Calculation,Medium,MCQ_Single,True,120,{},Not Visited,0
+GTM06_CHEM_46,Ionic_Equilibrium|Weak_Acids,Hard,Numeric,False,180,{},Wrong,0
+GTM06_CHEM_47,Mole_Concept|Empirical_Formula,Medium,Numeric,False,180,{},Correct,0
+GTM06_CHEM_48,Liquid_Solutions|Molality,Hard,Numeric,False,180,{},Not Visited,0
+GTM06_CHEM_49,Amines|Diazonium_Salts,Hard,Numeric,False,180,{},Wrong,0
+GTM06_CHEM_50,Thermodynamics|Enthalpy_of_Formation,Medium,Numeric,False,180,{},Not Visited,0
+GTM06_MATH_51,Permutations_and_Combinations,Hard,MCQ_Single,True,120,{},Not Visited,0
+GTM06_MATH_52,Coordinate_Geometry|Parabola|Trapezium,Hard,MCQ_Single,True,120,{},Not Visited,0
+GTM06_MATH_53,Probability|Trigonometric_Inequalities,Medium,MCQ_Single,True,120,{},Not Visited,0
+GTM06_MATH_54,Functions|Functional_Equations,Medium,MCQ_Single,True,120,{},Not Visited,0
+GTM06_MATH_55,Functions|Functional_Equations,Medium,MCQ_Single,True,120,{},Not Visited,0
+GTM06_MATH_56,3D_Geometry|Points_and_Distance,Medium,MCQ_Single,True,120,{},Correct,0
+GTM06_MATH_57,Sets_and_Relations,Easy,MCQ_Single,True,120,{},Not Visited,0
+GTM06_MATH_58,Coordinate_Geometry|Circles,Easy,MCQ_Single,True,120,{},Not Visited,0
+GTM06_MATH_59,Sequence_and_Series|Arithmetico_Geometric_Progression,Medium,MCQ_Single,True,120,{},Not Visited,0
+GTM06_MATH_60,Deleted,Medium,MCQ_Single,True,120,{},Deleted,0
+GTM06_MATH_61,Sequence_and_Series|Infinite_Geometric_Progression,Easy,MCQ_Single,True,120,{},Correct,0
+GTM06_MATH_62,3D_Geometry|Lines|Distance,Medium,MCQ_Single,True,120,{},Not Visited,0
+GTM06_MATH_63,Integral_Calculus|Definite_Integration|Leibniz_Rule,Easy,MCQ_Single,True,120,{},Not Visited,0
+GTM06_MATH_64,Quadratic_Equations|Inequalities,Hard,MCQ_Single,True,120,{},Not Visited,0
+GTM06_MATH_65,Differential_Equations|Linear_Differential_Equations,Easy,MCQ_Single,True,120,{},Correct,0
+GTM06_MATH_66,Binomial_Theorem,Hard,MCQ_Single,True,120,{},Not Visited,0
+GTM06_MATH_67,Deleted,Medium,MCQ_Single,True,120,{},Deleted,0
+GTM06_MATH_68,Complex_Numbers|Locus,Easy,MCQ_Single,True,120,{},Not Visited,0
+GTM06_MATH_69,Probability|Random_Variables|Variance,Easy,MCQ_Single,True,120,{},Not Visited,0
+GTM06_MATH_70,Integral_Calculus|Area_Under_Curves,Hard,MCQ_Single,True,120,{},Not Visited,0
+GTM06_MATH_71,Matrices|Symmetric_and_Skew_Symmetric,Medium,Numeric,False,180,{},Not Visited,0
+GTM06_MATH_72,Binomial_Theorem|Coefficients,Hard,Numeric,False,180,{},Not Visited,0
+GTM06_MATH_73,Vector_Algebra|Cross_Product,Easy,Numeric,False,180,{},Not Visited,0
+GTM06_MATH_74,Calculus|Continuity_and_Differentiability,Medium,Numeric,False,180,{},Not Visited,0
+GTM06_MATH_75,Coordinate_Geometry|Ellipse|Eccentricity,Hard,Numeric,False,180,{},Not Visited,0
