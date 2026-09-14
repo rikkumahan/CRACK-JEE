@@ -131,7 +131,7 @@ def run_single_seed_benchmark(
 
     # Data efficiency evaluation at truncated student interaction lengths
     if eval_efficiency:
-        eff_lengths = [10, 25, 50, 100, 200]
+        eff_lengths = [10, 25, 50, 100, 200, 250]
         results["efficiency"] = {}
         for l in eff_lengths:
             # Truncate each student in test_df to first l interactions

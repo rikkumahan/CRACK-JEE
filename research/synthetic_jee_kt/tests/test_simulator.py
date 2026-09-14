@@ -127,3 +127,16 @@ def test_all_worlds_and_archetypes_instantiation():
             st = create_student(f"student_{w}_{a}", archetype_id=a, world_id=w, rng=rng, worlds_dict=worlds, archetypes_dict=archetypes)
             assert st.config.student_id == f"student_{w}_{a}"
             assert st.world.world_id == w
+
+
+def test_careless_error_tendency_impact():
+    world_d = WorldConfig(world_id="D", slip_rate_multiplier=1.5, careless_error_elevated=True)
+    cfg_low_careless = StudentConfig("S_low", slip_rate=0.05, careless_error_tendency=0.0)
+    cfg_high_careless = StudentConfig("S_high", slip_rate=0.05, careless_error_tendency=0.25)
+
+    s_low = SyntheticStudent(cfg_low_careless, world_config=world_d)
+    s_high = SyntheticStudent(cfg_high_careless, world_config=world_d)
+
+    # High careless student must have strictly higher effective slip
+    assert s_high.effective_slip > s_low.effective_slip
+    assert s_high.effective_slip == min(0.49, (0.05 + 0.25) * 1.5)

@@ -22,6 +22,7 @@ class WorldConfig:
     time_pressure_sensitivity: float = 0.0
     confidence_bias_scale: float = 0.0
     multi_concept_ratio: float = 0.0
+    careless_error_elevated: bool = False
 
 
 @dataclass
@@ -68,7 +69,14 @@ class SyntheticStudent:
         # Effective student parameters modified by world
         self.effective_lr = self.config.learning_rate * self.world.learning_rate_multiplier
         self.effective_forget_rate = self.config.forgetting_rate * self.world.forgetting_rate_multiplier
-        self.effective_slip = min(0.49, self.config.slip_rate * self.world.slip_rate_multiplier)
+
+        # Wire careless_error_tendency when careless errors are elevated (e.g. World D)
+        careless_boost = (
+            self.config.careless_error_tendency
+            if (getattr(self.world, "careless_error_elevated", False) or self.world.world_id == "D")
+            else 0.0
+        )
+        self.effective_slip = min(0.49, (self.config.slip_rate + careless_boost) * self.world.slip_rate_multiplier)
         self.effective_guess = min(0.49, self.config.guess_rate * self.world.guess_rate_multiplier)
 
     def set_concept_mastery(self, concept_id: str, mastery: float, day: float = 0.0) -> None:

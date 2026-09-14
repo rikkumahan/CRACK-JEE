@@ -33,6 +33,7 @@ def load_worlds_config(config_path: Optional[Path] = None) -> Dict[str, WorldCon
             time_pressure_sensitivity=float(data.get("time_pressure_sensitivity", 0.0)),
             confidence_bias_scale=float(data.get("confidence_bias_scale", 0.0)),
             multi_concept_ratio=float(data.get("multi_concept_ratio", 0.0)),
+            careless_error_elevated=bool(data.get("careless_error_elevated", False)),
         )
     return worlds
 

@@ -10,10 +10,10 @@ from evaluation.cross_world import (
 
 @pytest.fixture
 def multi_world_dataset():
-    # 4 worlds (A, B, D, E), 4 students each, 15 interactions each
+    # 5 worlds (A, B, D, E, G), 4 students each, 15 interactions each
     rows = []
     rng = np.random.default_rng(42)
-    for wid in ["A", "B", "D", "E"]:
+    for wid in ["A", "B", "D", "E", "G"]:
         for s_idx in range(4):
             sid = f"STU_{wid}_{s_idx}"
             cur_time = 1000.0
@@ -76,4 +76,40 @@ def test_per_world_breakdown(multi_world_dataset):
         assert w in breakdown
         assert "lkt" in breakdown[w]
         assert "auc" in breakdown[w]["lkt"]
+
+
+def test_ablation_suite(multi_world_dataset):
+    from evaluation.cross_world import (
+        run_core_vs_extended_ablation,
+        run_single_vs_multiconcept_ablation,
+        run_bkt_fixed_vs_fit_ablation,
+    )
+
+    # 1. Core vs Extended
+    res_ce = run_core_vs_extended_ablation(
+        multi_world_dataset,
+        models=["bkt_default", "lkt"],
+    )
+    assert "core_worlds" in res_ce
+    assert "extended_worlds" in res_ce
+    assert "bkt_default" in res_ce["core_worlds"]
+    assert "lkt" in res_ce["extended_worlds"]
+
+    # 2. Single vs Multi-concept
+    # Inject multi-concept row into fixture
+    multi_world_dataset["has_multi_concept"] = multi_world_dataset["world_id"] == "G"
+    res_sm = run_single_vs_multiconcept_ablation(
+        multi_world_dataset,
+        models=["bkt_default", "pfa", "lkt"],
+    )
+    assert "single_concept" in res_sm
+    assert "multi_concept" in res_sm
+    assert "pfa" in res_sm["single_concept"]
+
+    # 3. Fixed vs Fitted BKT
+    res_bkt = run_bkt_fixed_vs_fit_ablation(multi_world_dataset)
+    assert "bkt_default" in res_bkt
+    assert "bkt_fit" in res_bkt
+    assert "auc" in res_bkt["bkt_default"]
+    assert "auc" in res_bkt["bkt_fit"]
 
