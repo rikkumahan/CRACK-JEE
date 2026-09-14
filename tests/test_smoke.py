@@ -28,3 +28,4 @@ async def test_echo_tool_in_process():
 
         result = await client.call_tool("echo", {"message": "ping"})
         assert result.content[0].text == "ping"
+

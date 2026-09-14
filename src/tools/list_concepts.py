@@ -15,3 +15,4 @@ def register_list_concepts(server: FastMCP) -> None:
     )
     def handle_list_concepts(subject: str) -> str:
         return json.dumps(list_concepts(subject))
+

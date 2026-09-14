@@ -80,3 +80,4 @@ async def test_log_performance_input_records_attempt_and_dedups_concepts_in_proc
         concepts = json.loads(list_result.content[0].text)
         assert len(concepts) == 1, "expected exactly one deduped concept"
         assert concepts[0]["name"] == "Rotational Motion"
+

@@ -60,3 +60,4 @@ def register_log_performance_input(server: FastMCP) -> None:
 
         conn.commit()
         return f'Logged attempt {attempt_id} for concept "{concept}" ({subject}): {result}.'
+

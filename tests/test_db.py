@@ -88,3 +88,4 @@ def test_list_concepts(test_db):
     math_concepts = list_concepts("Math", conn=conn)
     assert len(math_concepts) == 1
     assert math_concepts[0]["name"] == "Calculus"
+

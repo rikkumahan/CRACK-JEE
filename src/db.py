@@ -113,3 +113,66 @@ def list_concepts(
         (subject,),
     )
     return [{"id": row[0], "name": row[1]} for row in cursor.fetchall()]
+
+
+def get_weak_topics(
+    subject: str, limit: int = 10, conn: Optional[sqlite3.Connection] = None
+) -> List[Dict[str, Any]]:
+    connection = conn if conn is not None else get_connection()
+    cursor = connection.cursor()
+    cursor.execute(
+        """
+        SELECT c.id, c.name,
+               COUNT(*) AS total_attempts,
+               SUM(CASE WHEN a.result = 'correct' THEN 1 ELSE 0 END) AS correct,
+               SUM(CASE WHEN a.result = 'wrong' THEN 1 ELSE 0 END) AS wrong,
+               SUM(CASE WHEN a.result = 'unattempted' THEN 1 ELSE 0 END) AS unattempted
+        FROM attempts a
+        JOIN concepts c ON c.id = a.concept_id
+        WHERE c.subject = ?
+        GROUP BY c.id
+        ORDER BY (CAST(wrong AS REAL) / total_attempts) DESC
+        LIMIT ?
+        """,
+        (subject, limit),
+    )
+    result = []
+    for concept_id, name, total, correct, wrong, unattempted in cursor.fetchall():
+        result.append(
+            {
+                "id": concept_id,
+                "name": name,
+                "total_attempts": total,
+                "correct": correct,
+                "wrong": wrong,
+                "unattempted": unattempted,
+                "accuracy": round(correct / total, 4) if total else 0.0,
+            }
+        )
+    return result
+
+
+def get_recurring_mistakes(
+    subject: str, min_occurrences: int = 2, conn: Optional[sqlite3.Connection] = None
+) -> List[Dict[str, Any]]:
+    connection = conn if conn is not None else get_connection()
+    cursor = connection.cursor()
+    cursor.execute(
+        """
+        SELECT c.name AS concept, et.name AS error_type, COUNT(*) AS occurrences
+        FROM attempt_errors ae
+        JOIN attempts a ON a.id = ae.attempt_id
+        JOIN concepts c ON c.id = a.concept_id
+        JOIN error_types et ON et.id = ae.error_type_id
+        WHERE c.subject = ?
+        GROUP BY c.id, et.id
+        HAVING COUNT(*) >= ?
+        ORDER BY occurrences DESC
+        """,
+        (subject, min_occurrences),
+    )
+    return [
+        {"concept": row[0], "error_type": row[1], "occurrences": row[2]}
+        for row in cursor.fetchall()
+    ]
+
