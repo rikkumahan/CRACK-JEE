@@ -116,3 +116,4 @@ def test_evaluation_metrics():
     rec = compute_state_recovery_metrics(true_state, est_state)
     assert rec["pearson_r"] > 0.95
     assert rec["mae"] < 0.10
+

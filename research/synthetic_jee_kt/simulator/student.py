@@ -273,3 +273,4 @@ class SyntheticStudent:
             "p_know": round(p_know, 4),
             "ground_truth_mastery": round(self.get_concept_mastery(cid), 4),
         }
+

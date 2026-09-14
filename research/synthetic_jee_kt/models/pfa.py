@@ -143,3 +143,4 @@ class PFAModel:
             trackers[sid].update(cid, outcome)
 
         return predictions
+

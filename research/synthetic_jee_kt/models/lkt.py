@@ -178,3 +178,4 @@ class LKTModel:
             trackers[sid].update(cid, outcome, ts)
 
         return predictions
+

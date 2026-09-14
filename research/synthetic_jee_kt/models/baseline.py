@@ -45,3 +45,4 @@ class RecentAccuracyBaseline:
         keys_to_del = [k for k in self._history if k[0] == student_id]
         for k in keys_to_del:
             del self._history[k]
+

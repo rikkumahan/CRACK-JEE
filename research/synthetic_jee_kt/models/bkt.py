@@ -154,3 +154,4 @@ def fit_bkt_for_sequences(
             p_g=float(res.x[3]),
         )
     return initial_params
+

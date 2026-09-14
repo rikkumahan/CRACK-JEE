@@ -130,3 +130,4 @@ archetypes:
     careless_error_tendency: 0.10
     time_pressure_sensitivity: 0.20
     confidence_bias: 0.0
+
