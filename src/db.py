@@ -58,6 +58,21 @@ def init_db(db_path: Optional[os.PathLike | str] = None) -> sqlite3.Connection:
         mastery_probability REAL NOT NULL,
         last_attempt_at INTEGER NOT NULL
       );
+
+      CREATE TABLE IF NOT EXISTS interventions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        concept_id INTEGER NOT NULL REFERENCES concepts(id),
+        plan_text TEXT NOT NULL,
+        created_at INTEGER NOT NULL
+      );
+
+      CREATE TABLE IF NOT EXISTS intervention_outcomes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        intervention_id INTEGER NOT NULL REFERENCES interventions(id),
+        accuracy_before REAL,
+        accuracy_after REAL,
+        measured_at INTEGER NOT NULL
+      );
     """)
 
     error_types = [
@@ -257,4 +272,76 @@ def get_concept_state(
             }
         )
     return result
+
+
+def create_intervention(
+    concept_id: int, plan_text: str, conn: Optional[sqlite3.Connection] = None
+) -> int:
+    connection = conn if conn is not None else get_connection()
+    created_at = int(time.time() * 1000)
+    cursor = connection.cursor()
+    cursor.execute(
+        "INSERT INTO interventions (concept_id, plan_text, created_at) VALUES (?, ?, ?)",
+        (concept_id, plan_text, created_at),
+    )
+    connection.commit()
+    return cursor.lastrowid  # type: ignore
+
+
+def get_progress(
+    intervention_id: int, conn: Optional[sqlite3.Connection] = None
+) -> Dict[str, Any]:
+    """Compares accuracy on the intervention's concept before vs. after
+    interventions.created_at — the closed-loop verification step."""
+    connection = conn if conn is not None else get_connection()
+    cursor = connection.cursor()
+    cursor.execute(
+        "SELECT concept_id, plan_text, created_at FROM interventions WHERE id = ?",
+        (intervention_id,),
+    )
+    row = cursor.fetchone()
+    if row is None:
+        raise ValueError(f"No intervention with id {intervention_id}")
+    concept_id, plan_text, created_at = row
+
+    cursor.execute(
+        """
+        SELECT
+          SUM(CASE WHEN created_at < ? THEN 1 ELSE 0 END),
+          SUM(CASE WHEN created_at < ? AND result = 'correct' THEN 1 ELSE 0 END),
+          SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END),
+          SUM(CASE WHEN created_at >= ? AND result = 'correct' THEN 1 ELSE 0 END)
+        FROM attempts
+        WHERE concept_id = ?
+        """,
+        (created_at, created_at, created_at, created_at, concept_id),
+    )
+    total_before, correct_before, total_after, correct_after = cursor.fetchone()
+    total_before = total_before or 0
+    correct_before = correct_before or 0
+    total_after = total_after or 0
+    correct_after = correct_after or 0
+
+    accuracy_before = round(correct_before / total_before, 4) if total_before else None
+    accuracy_after = round(correct_after / total_after, 4) if total_after else None
+
+    measured_at = int(time.time() * 1000)
+    cursor.execute(
+        """
+        INSERT INTO intervention_outcomes (intervention_id, accuracy_before, accuracy_after, measured_at)
+        VALUES (?, ?, ?, ?)
+        """,
+        (intervention_id, accuracy_before, accuracy_after, measured_at),
+    )
+    connection.commit()
+
+    return {
+        "intervention_id": intervention_id,
+        "concept_id": concept_id,
+        "plan_text": plan_text,
+        "accuracy_before": accuracy_before,
+        "accuracy_after": accuracy_after,
+        "total_before": total_before,
+        "total_after": total_after,
+    }
 
