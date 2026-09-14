@@ -76,3 +76,4 @@ def test_per_world_breakdown(multi_world_dataset):
         assert w in breakdown
         assert "lkt" in breakdown[w]
         assert "auc" in breakdown[w]["lkt"]
+
