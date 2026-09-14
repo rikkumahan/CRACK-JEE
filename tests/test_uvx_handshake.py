@@ -98,3 +98,4 @@ def test_raw_jsonrpc_handshake_via_uvx():
             proc.wait(timeout=5)
         except subprocess.TimeoutExpired:
             proc.kill()
+
