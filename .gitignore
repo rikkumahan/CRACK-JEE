@@ -2,3 +2,9 @@
 docs/log.md
 node_modules/
 data/
+.venv/
+__pycache__/
+*.egg-info/
+build/
+dist/
+.pytest_cache/
