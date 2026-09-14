@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 from fastmcp import FastMCP
+from tools.list_concepts import register_list_concepts
+from tools.log_performance_input import register_log_performance_input
 
 mcp = FastMCP(
     name="jee-performance-engine",
@@ -13,6 +15,10 @@ mcp = FastMCP(
 )
 def echo(message: str) -> str:
     return message
+
+
+register_list_concepts(mcp)
+register_log_performance_input(mcp)
 
 
 def main() -> None:
