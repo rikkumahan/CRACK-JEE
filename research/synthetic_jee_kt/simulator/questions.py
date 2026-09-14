@@ -164,3 +164,50 @@ class QuestionBank:
         with open(path, "r", encoding="utf-8") as f:
             data = json.load(f)
         return cls(data)
+
+
+def build_fallback_items() -> List[Dict[str, Any]]:
+    """Creates a comprehensive, realistic JEE item bank fixture for offline execution."""
+    subjects_topics = {
+        "Physics": {
+            "Mechanics": ["Rotational Motion", "Work Power Energy", "Kinematics", "Laws of Motion", "Gravitation"],
+            "Electrodynamics": ["Electrostatics", "Current Electricity", "Magnetism", "Electromagnetic Induction"],
+            "Thermodynamics": ["Kinetic Theory of Gases", "First Law of Thermodynamics", "Heat Transfer"],
+            "Optics": ["Ray Optics", "Wave Optics"],
+            "Modern Physics": ["Photoelectric Effect", "Atomic Structure", "Nuclear Physics"],
+        },
+        "Chemistry": {
+            "Physical Chemistry": ["Thermodynamics", "Chemical Equilibrium", "Electrochemistry", "Chemical Kinetics", "Solutions"],
+            "Organic Chemistry": ["General Organic Chemistry", "Hydrocarbons", "Alcohols and Ethers", "Aldehydes and Ketones"],
+            "Inorganic Chemistry": ["Periodic Table", "Chemical Bonding", "Coordination Compounds", "p-Block Elements"],
+        },
+        "Mathematics": {
+            "Calculus": ["Limits and Continuity", "Definite Integration", "Differential Equations", "Application of Derivatives"],
+            "Algebra": ["Complex Numbers", "Matrices and Determinants", "Probability", "Permutations and Combinations"],
+            "Coordinate Geometry": ["Straight Lines", "Circles", "Conic Sections"],
+            "Vectors and 3D": ["Vector Algebra", "Three Dimensional Geometry"],
+        }
+    }
+    items = []
+    qid = 1
+    diffs = ["Easy", "Moderate", "Tough"]
+    qtypes = ["single_correct", "numerical"]
+
+    for subject, topics in subjects_topics.items():
+        for topic, subtopics in topics.items():
+            for subtopic in subtopics:
+                for d_idx, diff in enumerate(diffs):
+                    for q_idx in range(5):
+                        items.append({
+                            "question_id": f"jee_{subject[:3].lower()}_{qid:04d}",
+                            "subject": subject,
+                            "topic": topic,
+                            "subtopic": subtopic,
+                            "difficulty": diff,
+                            "question_type": qtypes[(d_idx + q_idx) % 2],
+                            "correct_option": ["A", "B", "C", "D"][q_idx % 4],
+                            "solution": f"Step by step solution for {subtopic} problem {qid}",
+                            "has_image": False,
+                        })
+                        qid += 1
+    return items
