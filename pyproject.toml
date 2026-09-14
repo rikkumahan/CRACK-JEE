@@ -22,6 +22,7 @@ dev = [
 
 [tool.setuptools]
 package-dir = {"" = "src"}
+py-modules = ["server", "db"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
