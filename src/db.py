@@ -1,3 +1,4 @@
+import json
 import os
 import re
 import sqlite3
@@ -72,6 +73,28 @@ def init_db(db_path: Optional[os.PathLike | str] = None) -> sqlite3.Connection:
         accuracy_before REAL,
         accuracy_after REAL,
         measured_at INTEGER NOT NULL
+      );
+
+      CREATE TABLE IF NOT EXISTS exams (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        exam_date TEXT NOT NULL,
+        syllabus TEXT NOT NULL,
+        created_at INTEGER NOT NULL
+      );
+
+      CREATE TABLE IF NOT EXISTS exam_plans (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        exam_id INTEGER NOT NULL REFERENCES exams(id),
+        plan_text TEXT NOT NULL,
+        created_at INTEGER NOT NULL
+      );
+
+      CREATE TABLE IF NOT EXISTS student_profile (
+        id INTEGER PRIMARY KEY CHECK (id = 1),
+        summary TEXT NOT NULL,
+        session_count INTEGER NOT NULL DEFAULT 0,
+        updated_at INTEGER NOT NULL
       );
     """)
 
@@ -324,6 +347,7 @@ def get_revision_due(
                     "mastery_probability": round(current, 4),
                     "projected_mastery": round(projected, 4),
                     "due_now": due_now,
+                    "days_since_last_attempt": round(days_since, 2),
                 }
             )
 
@@ -447,4 +471,254 @@ def get_progress(
         "total_before": total_before,
         "total_after": total_after,
     }
+
+
+def set_exam(
+    name: str,
+    exam_date: str,
+    syllabus: List[Dict[str, str]],
+    conn: Optional[sqlite3.Connection] = None,
+) -> Dict[str, Any]:
+    """syllabus: list of {"subject": ..., "concept": ...}. Resolves each
+    entry through find_or_create_concept (same dedup as log_performance_input)
+    and stores the resolved concept_id alongside subject/concept."""
+    connection = conn if conn is not None else get_connection()
+    resolved = []
+    for item in syllabus:
+        concept_id = find_or_create_concept(item["concept"], item["subject"], conn=connection)
+        resolved.append({"subject": item["subject"], "concept": item["concept"], "concept_id": concept_id})
+
+    created_at = int(time.time() * 1000)
+    cursor = connection.cursor()
+    cursor.execute(
+        "INSERT INTO exams (name, exam_date, syllabus, created_at) VALUES (?, ?, ?, ?)",
+        (name, exam_date, json.dumps(resolved), created_at),
+    )
+    connection.commit()
+    return {"exam_id": cursor.lastrowid, "name": name, "exam_date": exam_date, "syllabus": resolved}
+
+
+def list_exams(conn: Optional[sqlite3.Connection] = None) -> List[Dict[str, Any]]:
+    connection = conn if conn is not None else get_connection()
+    cursor = connection.cursor()
+    cursor.execute(
+        """
+        SELECT e.id, e.name, e.exam_date,
+               EXISTS(SELECT 1 FROM exam_plans p WHERE p.exam_id = e.id) AS has_plan
+        FROM exams e
+        ORDER BY e.exam_date
+        """
+    )
+    return [
+        {"id": row[0], "name": row[1], "exam_date": row[2], "has_plan": bool(row[3])}
+        for row in cursor.fetchall()
+    ]
+
+
+def get_exam(exam_id: int, conn: Optional[sqlite3.Connection] = None) -> Dict[str, Any]:
+    connection = conn if conn is not None else get_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT name, exam_date, syllabus FROM exams WHERE id = ?", (exam_id,))
+    row = cursor.fetchone()
+    if row is None:
+        raise ValueError(f"No exam with id {exam_id}")
+    name, exam_date, syllabus_json = row
+    syllabus = json.loads(syllabus_json)
+
+    not_yet_attempted = []
+    for item in syllabus:
+        cursor.execute("SELECT COUNT(*) FROM attempts WHERE concept_id = ?", (item["concept_id"],))
+        if cursor.fetchone()[0] == 0:
+            not_yet_attempted.append({"subject": item["subject"], "concept": item["concept"]})
+
+    cursor.execute(
+        "SELECT plan_text, created_at FROM exam_plans WHERE exam_id = ? ORDER BY created_at DESC, id DESC LIMIT 1",
+        (exam_id,),
+    )
+    plan_row = cursor.fetchone()
+
+    return {
+        "exam_id": exam_id,
+        "name": name,
+        "exam_date": exam_date,
+        "syllabus": syllabus,
+        "not_yet_attempted": not_yet_attempted,
+        "latest_plan_text": plan_row[0] if plan_row else None,
+        "latest_plan_created_at": plan_row[1] if plan_row else None,
+    }
+
+
+def generate_exam_plan(
+    exam_id: int, plan_text: str, conn: Optional[sqlite3.Connection] = None
+) -> Dict[str, Any]:
+    connection = conn if conn is not None else get_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT id FROM exams WHERE id = ?", (exam_id,))
+    if cursor.fetchone() is None:
+        raise ValueError(f"No exam with id {exam_id}")
+
+    created_at = int(time.time() * 1000)
+    cursor.execute(
+        "INSERT INTO exam_plans (exam_id, plan_text, created_at) VALUES (?, ?, ?)",
+        (exam_id, plan_text, created_at),
+    )
+    connection.commit()
+    return {"exam_id": exam_id, "plan_id": cursor.lastrowid, "created_at": created_at}
+
+
+def get_exam_progress(
+    exam_id: int, conn: Optional[sqlite3.Connection] = None
+) -> Dict[str, Any]:
+    """Reuses get_progress's before/after accuracy split, aggregated across
+    every concept in the exam's syllabus instead of one."""
+    connection = conn if conn is not None else get_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT syllabus FROM exams WHERE id = ?", (exam_id,))
+    row = cursor.fetchone()
+    if row is None:
+        raise ValueError(f"No exam with id {exam_id}")
+    concept_ids = [item["concept_id"] for item in json.loads(row[0])]
+
+    cursor.execute(
+        "SELECT created_at FROM exam_plans WHERE exam_id = ? ORDER BY created_at DESC, id DESC LIMIT 1",
+        (exam_id,),
+    )
+    plan_row = cursor.fetchone()
+    if plan_row is None:
+        raise ValueError(f"No plan generated yet for exam {exam_id}")
+    plan_created_at = plan_row[0]
+
+    placeholders = ",".join("?" * len(concept_ids))
+    cursor.execute(
+        f"""
+        SELECT
+          SUM(CASE WHEN created_at < ? THEN 1 ELSE 0 END),
+          SUM(CASE WHEN created_at < ? AND result = 'correct' THEN 1 ELSE 0 END),
+          SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END),
+          SUM(CASE WHEN created_at >= ? AND result = 'correct' THEN 1 ELSE 0 END)
+        FROM attempts
+        WHERE concept_id IN ({placeholders})
+        """,
+        (plan_created_at, plan_created_at, plan_created_at, plan_created_at, *concept_ids),
+    )
+    total_before, correct_before, total_after, correct_after = cursor.fetchone()
+    total_before = total_before or 0
+    correct_before = correct_before or 0
+    total_after = total_after or 0
+    correct_after = correct_after or 0
+
+    return {
+        "exam_id": exam_id,
+        "plan_created_at": plan_created_at,
+        "accuracy_before": round(correct_before / total_before, 4) if total_before else None,
+        "accuracy_after": round(correct_after / total_after, 4) if total_after else None,
+        "total_before": total_before,
+        "total_after": total_after,
+    }
+
+
+def update_student_profile(
+    conn: Optional[sqlite3.Connection] = None, now_ms: Optional[int] = None
+) -> Dict[str, Any]:
+    """Recomputes and upserts the singleton student_profile row. No-ops
+    (returns {"updated": False}) if no attempts happened since the last
+    update, or ever, if never run before — covers an advice-only visit
+    where nothing was logged, so it doesn't dilute avg_attempts_per_session
+    with a meaningless zero."""
+    connection = conn if conn is not None else get_connection()
+    now = now_ms if now_ms is not None else int(time.time() * 1000)
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT session_count, updated_at FROM student_profile WHERE id = 1")
+    existing = cursor.fetchone()
+    since = existing[1] if existing else 0
+    session_count = existing[0] if existing else 0
+
+    cursor.execute("SELECT COUNT(*) FROM attempts WHERE created_at > ?", (since,))
+    if cursor.fetchone()[0] == 0:
+        return {"updated": False}
+
+    session_count += 1
+
+    cursor.execute("SELECT COUNT(*) FROM attempts")
+    total_attempts = cursor.fetchone()[0]
+    avg_attempts_per_session = round(total_attempts / session_count, 2)
+
+    cursor.execute("SELECT DISTINCT subject FROM concepts")
+    subjects = [row[0] for row in cursor.fetchall()]
+
+    subject_accuracy: Dict[str, float] = {}
+    for subject in subjects:
+        cursor.execute(
+            """
+            SELECT SUM(CASE WHEN a.result = 'correct' THEN 1 ELSE 0 END),
+                   SUM(CASE WHEN a.result IN ('correct', 'wrong') THEN 1 ELSE 0 END)
+            FROM attempts a JOIN concepts c ON c.id = a.concept_id
+            WHERE c.subject = ?
+            """,
+            (subject,),
+        )
+        correct, attempted = cursor.fetchone()
+        if attempted:
+            subject_accuracy[subject] = round(correct / attempted, 4)
+
+    cursor.execute(
+        "SELECT SUM(CASE WHEN result = 'unattempted' THEN 1 ELSE 0 END), COUNT(*) FROM attempts"
+    )
+    unattempted, total = cursor.fetchone()
+    overall_skip_rate = round(unattempted / total, 4) if total else 0.0
+
+    stuck_count = 0
+    concept_count = 0
+    revision_lags: List[float] = []
+    for subject in subjects:
+        patterns = get_time_patterns(subject, conn=connection)
+        concept_count += len(patterns)
+        stuck_count += sum(1 for p in patterns if p["stuck_pattern"])
+
+        for row in get_revision_due(subject, conn=connection, now_ms=now):
+            if row["due_now"]:
+                revision_lags.append(row["days_since_last_attempt"])
+
+    stuck_concept_rate = round(stuck_count / concept_count, 4) if concept_count else 0.0
+    avg_revision_lag_days = (
+        round(sum(revision_lags) / len(revision_lags), 2) if revision_lags else None
+    )
+
+    summary = {
+        "avg_attempts_per_session": avg_attempts_per_session,
+        "subject_accuracy": subject_accuracy,
+        "overall_skip_rate": overall_skip_rate,
+        "stuck_concept_rate": stuck_concept_rate,
+        "avg_revision_lag_days": avg_revision_lag_days,
+    }
+
+    cursor.execute(
+        """
+        INSERT INTO student_profile (id, summary, session_count, updated_at)
+        VALUES (1, ?, ?, ?)
+        ON CONFLICT(id) DO UPDATE SET
+            summary = excluded.summary,
+            session_count = excluded.session_count,
+            updated_at = excluded.updated_at
+        """,
+        (json.dumps(summary), session_count, now),
+    )
+    connection.commit()
+    return {"updated": True, "summary": summary, "session_count": session_count}
+
+
+def get_student_profile(conn: Optional[sqlite3.Connection] = None) -> Dict[str, Any]:
+    connection = conn if conn is not None else get_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT summary, session_count, updated_at FROM student_profile WHERE id = 1")
+    row = cursor.fetchone()
+    if row is None:
+        return {"session_count": 0, "summary": None}
+    summary_json, session_count, updated_at = row
+    return {"session_count": session_count, "summary": json.loads(summary_json), "updated_at": updated_at}
+
+
+
+
 

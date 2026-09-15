@@ -64,3 +64,14 @@ def test_scoped_to_subject(test_db):
     now = 60 * DAY_MS
     result = get_revision_due("Chemistry", conn=conn, now_ms=now, threshold=0.9)
     assert result == []
+
+
+def test_due_now_row_includes_days_since_last_attempt(test_db):
+    conn, _ = test_db
+    cid = find_or_create_concept("Friction", "Physics", conn=conn)
+    record_bkt_update(cid, "correct", attempt_time_ms=0, conn=conn)
+
+    now = 60 * DAY_MS
+    result = get_revision_due("Physics", conn=conn, now_ms=now, threshold=0.9)
+    assert result[0]["days_since_last_attempt"] == pytest.approx(60.0)
+
