@@ -1,4 +1,6 @@
+import json
 import pytest
+from fastmcp import Client
 from db import init_db, find_or_create_concept, update_student_profile, get_student_profile
 
 
@@ -70,3 +72,35 @@ def test_update_student_profile_noop_on_second_call_with_no_new_attempts(test_db
     second = update_student_profile(conn=conn, now_ms=3000)
     assert second["updated"] is False
     assert get_student_profile(conn=conn)["session_count"] == 1
+
+
+@pytest.mark.asyncio
+async def test_student_profile_wired_end_to_end():
+    from server import mcp
+    import db
+
+    if db._default_conn is not None:
+        db._default_conn.close()
+        db._default_conn = None
+    from pathlib import Path
+    db_path = Path(__file__).resolve().parent.parent / "data" / "jee.db"
+    if db_path.exists():
+        try:
+            db_path.unlink()
+        except OSError:
+            pass
+
+    async with Client(mcp) as client:
+        empty = await client.call_tool("get_student_profile", {})
+        assert json.loads(empty.content[0].text)["session_count"] == 0
+
+        await client.call_tool(
+            "log_performance_input",
+            {"subject": "Physics", "concept": "Friction", "result": "correct"},
+        )
+        end_result = await client.call_tool("end_study_session", {})
+        assert json.loads(end_result.content[0].text)["updated"] is True
+
+        profile_result = await client.call_tool("get_student_profile", {})
+        profile = json.loads(profile_result.content[0].text)
+        assert profile["session_count"] == 1

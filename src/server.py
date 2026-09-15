@@ -9,6 +9,13 @@ from tools.generate_daily_plan import register_generate_daily_plan
 from tools.get_progress import register_get_progress
 from tools.get_revision_due import register_get_revision_due
 from tools.get_time_patterns import register_get_time_patterns
+from tools.set_exam import register_set_exam
+from tools.list_exams import register_list_exams
+from tools.get_exam import register_get_exam
+from tools.generate_exam_plan import register_generate_exam_plan
+from tools.get_exam_progress import register_get_exam_progress
+from tools.end_study_session import register_end_study_session
+from tools.get_student_profile import register_get_student_profile
 
 mcp = FastMCP(
     name="jee-performance-engine",
@@ -33,6 +40,14 @@ register_generate_daily_plan(mcp)
 register_get_progress(mcp)
 register_get_revision_due(mcp)
 register_get_time_patterns(mcp)
+register_set_exam(mcp)
+register_list_exams(mcp)
+register_get_exam(mcp)
+register_generate_exam_plan(mcp)
+register_get_exam_progress(mcp)
+register_end_study_session(mcp)
+register_get_student_profile(mcp)
+
 
 
 def main() -> None:

@@ -1,4 +1,6 @@
+import json
 import pytest
+from fastmcp import Client
 from db import init_db, set_exam, list_exams, generate_exam_plan
 
 
@@ -129,3 +131,61 @@ def test_get_exam_progress_raises_when_no_plan_yet(test_db):
     from db import get_exam_progress
     with pytest.raises(ValueError):
         get_exam_progress(exam["exam_id"], conn=conn)
+
+
+@pytest.mark.asyncio
+async def test_exam_plan_wired_end_to_end():
+    from server import mcp
+    import db
+
+    if db._default_conn is not None:
+        db._default_conn.close()
+        db._default_conn = None
+    from pathlib import Path
+    db_path = Path(__file__).resolve().parent.parent / "data" / "jee.db"
+    if db_path.exists():
+        try:
+            db_path.unlink()
+        except OSError:
+            pass
+
+    async with Client(mcp) as client:
+        set_result = await client.call_tool(
+            "set_exam",
+            {
+                "name": "Physics Unit Test",
+                "exam_date": "2026-11-01",
+                "syllabus": [{"subject": "Physics", "concept": "Friction"}],
+            },
+        )
+        exam_id = json.loads(set_result.content[0].text)["exam_id"]
+
+        list_result = await client.call_tool("list_exams", {})
+        exams = json.loads(list_result.content[0].text)
+        assert any(e["id"] == exam_id for e in exams)
+
+        get_result = await client.call_tool("get_exam", {"exam_id": exam_id})
+        detail = json.loads(get_result.content[0].text)
+        assert detail["not_yet_attempted"][0]["concept"] == "Friction"
+
+        await client.call_tool(
+            "log_performance_input",
+            {"subject": "Physics", "concept": "Friction", "result": "wrong"},
+        )
+
+        plan_result = await client.call_tool(
+            "generate_exam_plan",
+            {"exam_id": exam_id, "plan_text": "Do 10 friction problems."},
+        )
+        assert json.loads(plan_result.content[0].text)["exam_id"] == exam_id
+
+        await client.call_tool(
+            "log_performance_input",
+            {"subject": "Physics", "concept": "Friction", "result": "correct"},
+        )
+
+        progress_result = await client.call_tool("get_exam_progress", {"exam_id": exam_id})
+        progress = json.loads(progress_result.content[0].text)
+        assert progress["total_before"] == 1
+        assert progress["total_after"] == 1
+
