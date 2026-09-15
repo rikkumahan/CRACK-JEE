@@ -532,7 +532,7 @@ def get_exam(exam_id: int, conn: Optional[sqlite3.Connection] = None) -> Dict[st
             not_yet_attempted.append({"subject": item["subject"], "concept": item["concept"]})
 
     cursor.execute(
-        "SELECT plan_text, created_at FROM exam_plans WHERE exam_id = ? ORDER BY created_at DESC LIMIT 1",
+        "SELECT plan_text, created_at FROM exam_plans WHERE exam_id = ? ORDER BY created_at DESC, id DESC LIMIT 1",
         (exam_id,),
     )
     plan_row = cursor.fetchone()
@@ -580,7 +580,7 @@ def get_exam_progress(
     concept_ids = [item["concept_id"] for item in json.loads(row[0])]
 
     cursor.execute(
-        "SELECT created_at FROM exam_plans WHERE exam_id = ? ORDER BY created_at DESC LIMIT 1",
+        "SELECT created_at FROM exam_plans WHERE exam_id = ? ORDER BY created_at DESC, id DESC LIMIT 1",
         (exam_id,),
     )
     plan_row = cursor.fetchone()
