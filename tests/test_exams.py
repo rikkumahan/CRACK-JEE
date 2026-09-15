@@ -45,3 +45,35 @@ def test_list_exams_reports_has_plan(test_db):
     conn.commit()
     exams = list_exams(conn=conn)
     assert exams[0]["has_plan"] is True
+
+
+def test_get_exam_flags_not_yet_attempted(test_db):
+    conn, _ = test_db
+    exam = set_exam(
+        "Physics Final", "2026-12-01",
+        [
+            {"subject": "Physics", "concept": "Friction"},
+            {"subject": "Physics", "concept": "Optics"},
+        ],
+        conn=conn,
+    )
+    friction_id = next(i["concept_id"] for i in exam["syllabus"] if i["concept"] == "Friction")
+    conn.execute(
+        "INSERT INTO attempts (concept_id, result, created_at) VALUES (?, 'correct', 1000)",
+        (friction_id,),
+    )
+    conn.commit()
+
+    from db import get_exam
+    detail = get_exam(exam["exam_id"], conn=conn)
+    not_yet = {item["concept"] for item in detail["not_yet_attempted"]}
+    assert not_yet == {"Optics"}
+    assert detail["latest_plan_text"] is None
+
+
+def test_get_exam_raises_for_unknown_exam(test_db):
+    conn, _ = test_db
+    from db import get_exam
+    with pytest.raises(ValueError):
+        get_exam(9999, conn=conn)
+

@@ -514,3 +514,37 @@ def list_exams(conn: Optional[sqlite3.Connection] = None) -> List[Dict[str, Any]
     ]
 
 
+def get_exam(exam_id: int, conn: Optional[sqlite3.Connection] = None) -> Dict[str, Any]:
+    connection = conn if conn is not None else get_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT name, exam_date, syllabus FROM exams WHERE id = ?", (exam_id,))
+    row = cursor.fetchone()
+    if row is None:
+        raise ValueError(f"No exam with id {exam_id}")
+    name, exam_date, syllabus_json = row
+    syllabus = json.loads(syllabus_json)
+
+    not_yet_attempted = []
+    for item in syllabus:
+        cursor.execute("SELECT COUNT(*) FROM attempts WHERE concept_id = ?", (item["concept_id"],))
+        if cursor.fetchone()[0] == 0:
+            not_yet_attempted.append({"subject": item["subject"], "concept": item["concept"]})
+
+    cursor.execute(
+        "SELECT plan_text, created_at FROM exam_plans WHERE exam_id = ? ORDER BY created_at DESC LIMIT 1",
+        (exam_id,),
+    )
+    plan_row = cursor.fetchone()
+
+    return {
+        "exam_id": exam_id,
+        "name": name,
+        "exam_date": exam_date,
+        "syllabus": syllabus,
+        "not_yet_attempted": not_yet_attempted,
+        "latest_plan_text": plan_row[0] if plan_row else None,
+        "latest_plan_created_at": plan_row[1] if plan_row else None,
+    }
+
+
+
