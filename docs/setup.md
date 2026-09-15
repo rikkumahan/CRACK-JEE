@@ -1,15 +1,12 @@
 # Setup & Commands
 
-Two implementations currently coexist: the original Node.js server
-(`src/*.js`) and the Python/FastMCP server (`src/*.py`), which now has
-feature parity (all 7 tools) and is the one to use going forward. Node's
-kept alongside until an explicit decommission decision — see
-`docs/fastmcp-migration-plan.md`. Both suites must pass on every commit
-until that decision is made, so the pre-commit hook's single TEST_CMD
-line below runs both (the hook takes only the first `# TEST_CMD:` match
-in this file — do not add a second one, combine into this line instead).
+The server is Python/FastMCP (`src/*.py`). The original Node.js
+implementation (`src/*.js`) was decommissioned once Python reached feature
+parity (all 7 tools) — see `docs/fastmcp-migration-plan.md` for the
+migration history and `docs/production-readiness-notes.md` for the
+decommission decision.
 
-## Python server (current)
+## Python server
 
 ### Install
 ```
@@ -33,20 +30,8 @@ uv sync
 uv run pytest tests/ -v
 ```
 
-## Node server (legacy, still passing, not yet decommissioned)
-
-### Install
-```
-npm install
-```
-
-### Run locally
-```
-npm start
-```
-
 ## Combined checks  (read by pre-commit hook)
 ```
-# LINT_CMD: node --check src/server.js
-# TEST_CMD: uv run pytest tests/ -v && npm test
+# LINT_CMD:
+# TEST_CMD: uv run pytest tests/ -v
 ```
