@@ -547,4 +547,74 @@ def get_exam(exam_id: int, conn: Optional[sqlite3.Connection] = None) -> Dict[st
     }
 
 
+def generate_exam_plan(
+    exam_id: int, plan_text: str, conn: Optional[sqlite3.Connection] = None
+) -> Dict[str, Any]:
+    connection = conn if conn is not None else get_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT id FROM exams WHERE id = ?", (exam_id,))
+    if cursor.fetchone() is None:
+        raise ValueError(f"No exam with id {exam_id}")
+
+    created_at = int(time.time() * 1000)
+    cursor.execute(
+        "INSERT INTO exam_plans (exam_id, plan_text, created_at) VALUES (?, ?, ?)",
+        (exam_id, plan_text, created_at),
+    )
+    connection.commit()
+    return {"exam_id": exam_id, "plan_id": cursor.lastrowid, "created_at": created_at}
+
+
+def get_exam_progress(
+    exam_id: int, conn: Optional[sqlite3.Connection] = None
+) -> Dict[str, Any]:
+    """Reuses get_progress's before/after accuracy split, aggregated across
+    every concept in the exam's syllabus instead of one."""
+    connection = conn if conn is not None else get_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT syllabus FROM exams WHERE id = ?", (exam_id,))
+    row = cursor.fetchone()
+    if row is None:
+        raise ValueError(f"No exam with id {exam_id}")
+    concept_ids = [item["concept_id"] for item in json.loads(row[0])]
+
+    cursor.execute(
+        "SELECT created_at FROM exam_plans WHERE exam_id = ? ORDER BY created_at DESC LIMIT 1",
+        (exam_id,),
+    )
+    plan_row = cursor.fetchone()
+    if plan_row is None:
+        raise ValueError(f"No plan generated yet for exam {exam_id}")
+    plan_created_at = plan_row[0]
+
+    placeholders = ",".join("?" * len(concept_ids))
+    cursor.execute(
+        f"""
+        SELECT
+          SUM(CASE WHEN created_at < ? THEN 1 ELSE 0 END),
+          SUM(CASE WHEN created_at < ? AND result = 'correct' THEN 1 ELSE 0 END),
+          SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END),
+          SUM(CASE WHEN created_at >= ? AND result = 'correct' THEN 1 ELSE 0 END)
+        FROM attempts
+        WHERE concept_id IN ({placeholders})
+        """,
+        (plan_created_at, plan_created_at, plan_created_at, plan_created_at, *concept_ids),
+    )
+    total_before, correct_before, total_after, correct_after = cursor.fetchone()
+    total_before = total_before or 0
+    correct_before = correct_before or 0
+    total_after = total_after or 0
+    correct_after = correct_after or 0
+
+    return {
+        "exam_id": exam_id,
+        "plan_created_at": plan_created_at,
+        "accuracy_before": round(correct_before / total_before, 4) if total_before else None,
+        "accuracy_after": round(correct_after / total_after, 4) if total_after else None,
+        "total_before": total_before,
+        "total_after": total_after,
+    }
+
+
+
 

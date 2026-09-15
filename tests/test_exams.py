@@ -1,5 +1,5 @@
 import pytest
-from db import init_db, set_exam, list_exams
+from db import init_db, set_exam, list_exams, generate_exam_plan
 
 
 @pytest.fixture
@@ -38,11 +38,7 @@ def test_list_exams_reports_has_plan(test_db):
     assert exams[0]["name"] == "Chem Unit Test"
     assert exams[0]["has_plan"] is False
 
-    conn.execute(
-        "INSERT INTO exam_plans (exam_id, plan_text, created_at) VALUES (?, 'Study aldehyde reactions.', 1000)",
-        (exam["exam_id"],),
-    )
-    conn.commit()
+    generate_exam_plan(exam["exam_id"], "Study aldehyde reactions.", conn=conn)
     exams = list_exams(conn=conn)
     assert exams[0]["has_plan"] is True
 
@@ -77,3 +73,59 @@ def test_get_exam_raises_for_unknown_exam(test_db):
     with pytest.raises(ValueError):
         get_exam(9999, conn=conn)
 
+
+def test_generate_exam_plan_keeps_history(test_db):
+    conn, _ = test_db
+    exam = set_exam("Bio Retest", "2026-09-30", [{"subject": "Biology", "concept": "Genetics"}], conn=conn)
+    generate_exam_plan(exam["exam_id"], "Plan v1", conn=conn)
+    generate_exam_plan(exam["exam_id"], "Plan v2", conn=conn)
+
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM exam_plans WHERE exam_id = ?", (exam["exam_id"],))
+    assert cursor.fetchone()[0] == 2
+
+    from db import get_exam
+    detail = get_exam(exam["exam_id"], conn=conn)
+    assert detail["latest_plan_text"] == "Plan v2"
+
+
+def test_generate_exam_plan_raises_for_unknown_exam(test_db):
+    conn, _ = test_db
+    with pytest.raises(ValueError):
+        generate_exam_plan(9999, "Some plan", conn=conn)
+
+
+def test_get_exam_progress_splits_before_and_after_latest_plan(test_db):
+    conn, _ = test_db
+    exam = set_exam("Physics Final", "2026-12-01", [{"subject": "Physics", "concept": "Friction"}], conn=conn)
+    concept_id = exam["syllabus"][0]["concept_id"]
+
+    conn.execute("INSERT INTO attempts (concept_id, result, created_at) VALUES (?, 'wrong', 1000)", (concept_id,))
+    conn.execute("INSERT INTO attempts (concept_id, result, created_at) VALUES (?, 'wrong', 2000)", (concept_id,))
+    conn.commit()
+
+    from db import get_exam_progress
+    generate_exam_plan(exam["exam_id"], "Focus on friction basics.", conn=conn)
+    cursor = conn.cursor()
+    cursor.execute("SELECT created_at FROM exam_plans WHERE exam_id = ?", (exam["exam_id"],))
+    plan_created_at = cursor.fetchone()[0]
+
+    conn.execute(
+        "INSERT INTO attempts (concept_id, result, created_at) VALUES (?, 'correct', ?)",
+        (concept_id, plan_created_at + 1000),
+    )
+    conn.commit()
+
+    progress = get_exam_progress(exam["exam_id"], conn=conn)
+    assert progress["accuracy_before"] == pytest.approx(0.0)
+    assert progress["accuracy_after"] == pytest.approx(1.0)
+    assert progress["total_before"] == 2
+    assert progress["total_after"] == 1
+
+
+def test_get_exam_progress_raises_when_no_plan_yet(test_db):
+    conn, _ = test_db
+    exam = set_exam("No Plan Exam", "2026-12-15", [{"subject": "Physics", "concept": "Optics"}], conn=conn)
+    from db import get_exam_progress
+    with pytest.raises(ValueError):
+        get_exam_progress(exam["exam_id"], conn=conn)
