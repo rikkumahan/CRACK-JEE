@@ -347,6 +347,7 @@ def get_revision_due(
                     "mastery_probability": round(current, 4),
                     "projected_mastery": round(projected, 4),
                     "due_now": due_now,
+                    "days_since_last_attempt": round(days_since, 2),
                 }
             )
 
