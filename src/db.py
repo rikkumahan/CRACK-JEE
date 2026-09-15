@@ -161,6 +161,7 @@ def get_weak_topics(
     )
     result = []
     for concept_id, name, total, correct, wrong, unattempted in cursor.fetchall():
+        attempted = correct + wrong
         result.append(
             {
                 "id": concept_id,
@@ -170,6 +171,8 @@ def get_weak_topics(
                 "wrong": wrong,
                 "unattempted": unattempted,
                 "accuracy": round(correct / total, 4) if total else 0.0,
+                "attempted_accuracy": round(correct / attempted, 4) if attempted else None,
+                "skip_rate": round(unattempted / total, 4) if total else 0.0,
             }
         )
     return result
@@ -269,6 +272,106 @@ def get_concept_state(
                 "name": name,
                 "mastery_probability": round(apply_decay(mastery, days_since), 4),
                 "last_attempt_at": last_attempt_at,
+            }
+        )
+    return result
+
+
+def get_revision_due(
+    subject: str,
+    days_ahead: int = 14,
+    threshold: float = 0.5,
+    conn: Optional[sqlite3.Connection] = None,
+    now_ms: Optional[int] = None,
+) -> List[Dict[str, Any]]:
+    """Spaced-repetition-lite: flags concepts whose decayed mastery (see
+    bkt.apply_decay) is already below `threshold`, or is projected to drop
+    below it within `days_ahead` days if she doesn't revise. Sorted most
+    urgent first.
+    # ponytail: apply_decay's rate (~3%/week) is deliberately gentle, so a
+    # short days_ahead window rarely differs from "now" unless mastery is
+    # already near the threshold — 14 days (one grace period) is a more
+    # meaningful default than a handful of days. Revisit if the decay rate
+    # itself ever gets tuned.
+    """
+    connection = conn if conn is not None else get_connection()
+    now = now_ms if now_ms is not None else int(time.time() * 1000)
+
+    cursor = connection.cursor()
+    cursor.execute(
+        """
+        SELECT c.id, c.name, s.mastery_probability, s.last_attempt_at
+        FROM student_concept_state s
+        JOIN concepts c ON c.id = s.concept_id
+        WHERE c.subject = ?
+        """,
+        (subject,),
+    )
+
+    due = []
+    for cid, name, mastery, last_attempt_at in cursor.fetchall():
+        days_since = (now - last_attempt_at) / (1000 * 60 * 60 * 24)
+        current = apply_decay(mastery, days_since)
+        projected = apply_decay(mastery, days_since + days_ahead)
+
+        due_now = current < threshold
+        due_soon = (not due_now) and projected < threshold
+        if due_now or due_soon:
+            due.append(
+                {
+                    "id": cid,
+                    "name": name,
+                    "mastery_probability": round(current, 4),
+                    "projected_mastery": round(projected, 4),
+                    "due_now": due_now,
+                }
+            )
+
+    due.sort(key=lambda row: (not row["due_now"], row["mastery_probability"]))
+    return due
+
+
+def get_time_patterns(
+    subject: str, conn: Optional[sqlite3.Connection] = None
+) -> List[Dict[str, Any]]:
+    """Average time spent per concept, split correct vs. wrong, with a
+    heuristic 'stuck_pattern' flag (wrong attempts taking much longer than
+    correct ones — the "25-minute trap" pattern found in real-student data).
+    # ponytail: 1.5x multiplier and the 3-attempt minimum are fixed guesses,
+    # not fitted — revisit once there's enough real data to justify fitting.
+    """
+    connection = conn if conn is not None else get_connection()
+    cursor = connection.cursor()
+    cursor.execute(
+        """
+        SELECT c.id, c.name,
+               AVG(CASE WHEN a.result = 'correct' THEN a.time_seconds END) AS avg_correct,
+               AVG(CASE WHEN a.result = 'wrong' THEN a.time_seconds END) AS avg_wrong,
+               SUM(CASE WHEN a.result = 'wrong' AND a.time_seconds IS NOT NULL THEN 1 ELSE 0 END) AS wrong_with_time
+        FROM attempts a
+        JOIN concepts c ON c.id = a.concept_id
+        WHERE c.subject = ?
+        GROUP BY c.id
+        ORDER BY c.name
+        """,
+        (subject,),
+    )
+
+    result = []
+    for cid, name, avg_correct, avg_wrong, wrong_with_time in cursor.fetchall():
+        stuck = bool(
+            wrong_with_time >= 3
+            and avg_correct is not None
+            and avg_wrong is not None
+            and avg_wrong > 1.5 * avg_correct
+        )
+        result.append(
+            {
+                "id": cid,
+                "name": name,
+                "avg_time_correct": round(avg_correct, 2) if avg_correct is not None else None,
+                "avg_time_wrong": round(avg_wrong, 2) if avg_wrong is not None else None,
+                "stuck_pattern": stuck,
             }
         )
     return result

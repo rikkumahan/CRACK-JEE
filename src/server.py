@@ -7,6 +7,8 @@ from tools.get_recurring_mistakes import register_get_recurring_mistakes
 from tools.get_concept_state import register_get_concept_state
 from tools.generate_daily_plan import register_generate_daily_plan
 from tools.get_progress import register_get_progress
+from tools.get_revision_due import register_get_revision_due
+from tools.get_time_patterns import register_get_time_patterns
 
 mcp = FastMCP(
     name="jee-performance-engine",
@@ -29,6 +31,8 @@ register_get_recurring_mistakes(mcp)
 register_get_concept_state(mcp)
 register_generate_daily_plan(mcp)
 register_get_progress(mcp)
+register_get_revision_due(mcp)
+register_get_time_patterns(mcp)
 
 
 def main() -> None:

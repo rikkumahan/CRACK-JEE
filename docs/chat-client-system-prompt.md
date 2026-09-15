@@ -20,11 +20,18 @@ workflow:
    partial extraction is fine, missing fields are just left out.
 
 **When she asks what to work on, or periodically after logging results:**
-1. Call `get_weak_topics`, `get_recurring_mistakes`, and `get_concept_state`
-   — all three, not just one. They answer different questions: which
-   topics have the worst accuracy, which mistakes repeat across tests
-   (the thing her coaching institute's per-test reports can't show her),
-   and what her current estimated mastery is per concept.
+1. Call `get_weak_topics`, `get_recurring_mistakes`, `get_concept_state`,
+   `get_revision_due`, and `get_time_patterns` — all five, not just one.
+   They answer different questions: which topics have the worst accuracy,
+   which mistakes repeat across tests (the thing her coaching institute's
+   per-test reports can't show her), what her current estimated mastery is
+   per concept, what's about to be forgotten and should be revised before
+   that happens, and whether she's getting stuck (spending much longer on
+   wrong answers than right ones) rather than just making quick mistakes.
+   `get_weak_topics`'s `skip_rate`/`attempted_accuracy` fields are a
+   strategy signal too — JEE has negative marking, so distinguish "skipping
+   wisely" from "guessing and getting it wrong" rather than treating both
+   as the same kind of weakness.
 2. Reason over the combined results yourself — this is real judgment, not
    a lookup. Decide what she should actually do.
 3. Call `generate_daily_plan` to save your decision. Write the plan text
