@@ -471,3 +471,46 @@ def get_progress(
         "total_after": total_after,
     }
 
+
+def set_exam(
+    name: str,
+    exam_date: str,
+    syllabus: List[Dict[str, str]],
+    conn: Optional[sqlite3.Connection] = None,
+) -> Dict[str, Any]:
+    """syllabus: list of {"subject": ..., "concept": ...}. Resolves each
+    entry through find_or_create_concept (same dedup as log_performance_input)
+    and stores the resolved concept_id alongside subject/concept."""
+    connection = conn if conn is not None else get_connection()
+    resolved = []
+    for item in syllabus:
+        concept_id = find_or_create_concept(item["concept"], item["subject"], conn=connection)
+        resolved.append({"subject": item["subject"], "concept": item["concept"], "concept_id": concept_id})
+
+    created_at = int(time.time() * 1000)
+    cursor = connection.cursor()
+    cursor.execute(
+        "INSERT INTO exams (name, exam_date, syllabus, created_at) VALUES (?, ?, ?, ?)",
+        (name, exam_date, json.dumps(resolved), created_at),
+    )
+    connection.commit()
+    return {"exam_id": cursor.lastrowid, "name": name, "exam_date": exam_date, "syllabus": resolved}
+
+
+def list_exams(conn: Optional[sqlite3.Connection] = None) -> List[Dict[str, Any]]:
+    connection = conn if conn is not None else get_connection()
+    cursor = connection.cursor()
+    cursor.execute(
+        """
+        SELECT e.id, e.name, e.exam_date,
+               EXISTS(SELECT 1 FROM exam_plans p WHERE p.exam_id = e.id) AS has_plan
+        FROM exams e
+        ORDER BY e.exam_date
+        """
+    )
+    return [
+        {"id": row[0], "name": row[1], "exam_date": row[2], "has_plan": bool(row[3])}
+        for row in cursor.fetchall()
+    ]
+
+
