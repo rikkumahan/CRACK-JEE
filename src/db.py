@@ -1,3 +1,4 @@
+import json
 import os
 import re
 import sqlite3
@@ -72,6 +73,28 @@ def init_db(db_path: Optional[os.PathLike | str] = None) -> sqlite3.Connection:
         accuracy_before REAL,
         accuracy_after REAL,
         measured_at INTEGER NOT NULL
+      );
+
+      CREATE TABLE IF NOT EXISTS exams (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        exam_date TEXT NOT NULL,
+        syllabus TEXT NOT NULL,
+        created_at INTEGER NOT NULL
+      );
+
+      CREATE TABLE IF NOT EXISTS exam_plans (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        exam_id INTEGER NOT NULL REFERENCES exams(id),
+        plan_text TEXT NOT NULL,
+        created_at INTEGER NOT NULL
+      );
+
+      CREATE TABLE IF NOT EXISTS student_profile (
+        id INTEGER PRIMARY KEY CHECK (id = 1),
+        summary TEXT NOT NULL,
+        session_count INTEGER NOT NULL DEFAULT 0,
+        updated_at INTEGER NOT NULL
       );
     """)
 
