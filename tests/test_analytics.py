@@ -75,6 +75,24 @@ def test_get_weak_topics_scoped_by_subject(test_db):
     assert result[0]["name"] == "Friction"
 
 
+def test_get_weak_topics_includes_skip_and_attempted_accuracy(test_db):
+    conn, _ = test_db
+    cid = find_or_create_concept("Friction", "Physics", conn=conn)
+    record_attempt(conn, cid, "correct")
+    record_attempt(conn, cid, "wrong")
+    record_attempt(conn, cid, "wrong")
+    record_attempt(conn, cid, "unattempted")
+
+    result = get_weak_topics("Physics", conn=conn)
+    row = result[0]
+    # accuracy (existing field) counts unattempted in the denominator: 1/4
+    assert row["accuracy"] == pytest.approx(0.25)
+    # attempted_accuracy excludes unattempted: 1/3, rounded to 4dp like accuracy
+    assert row["attempted_accuracy"] == pytest.approx(0.3333)
+    # skip_rate: 1/4
+    assert row["skip_rate"] == pytest.approx(0.25)
+
+
 def test_get_recurring_mistakes_finds_repeated_error_pattern(test_db):
     conn, _ = test_db
     friction = find_or_create_concept("Friction", "Physics", conn=conn)

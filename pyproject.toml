@@ -23,7 +23,7 @@ dev = [
 
 [tool.setuptools]
 package-dir = {"" = "src"}
-py-modules = ["server", "db", "prism_client"]
+py-modules = ["server", "db", "prism_client", "bkt"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
