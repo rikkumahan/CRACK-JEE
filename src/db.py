@@ -617,5 +617,108 @@ def get_exam_progress(
     }
 
 
+def update_student_profile(
+    conn: Optional[sqlite3.Connection] = None, now_ms: Optional[int] = None
+) -> Dict[str, Any]:
+    """Recomputes and upserts the singleton student_profile row. No-ops
+    (returns {"updated": False}) if no attempts happened since the last
+    update, or ever, if never run before — covers an advice-only visit
+    where nothing was logged, so it doesn't dilute avg_attempts_per_session
+    with a meaningless zero."""
+    connection = conn if conn is not None else get_connection()
+    now = now_ms if now_ms is not None else int(time.time() * 1000)
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT session_count, updated_at FROM student_profile WHERE id = 1")
+    existing = cursor.fetchone()
+    since = existing[1] if existing else 0
+    session_count = existing[0] if existing else 0
+
+    cursor.execute("SELECT COUNT(*) FROM attempts WHERE created_at > ?", (since,))
+    if cursor.fetchone()[0] == 0:
+        return {"updated": False}
+
+    session_count += 1
+
+    cursor.execute("SELECT COUNT(*) FROM attempts")
+    total_attempts = cursor.fetchone()[0]
+    avg_attempts_per_session = round(total_attempts / session_count, 2)
+
+    cursor.execute("SELECT DISTINCT subject FROM concepts")
+    subjects = [row[0] for row in cursor.fetchall()]
+
+    subject_accuracy: Dict[str, float] = {}
+    for subject in subjects:
+        cursor.execute(
+            """
+            SELECT SUM(CASE WHEN a.result = 'correct' THEN 1 ELSE 0 END),
+                   SUM(CASE WHEN a.result IN ('correct', 'wrong') THEN 1 ELSE 0 END)
+            FROM attempts a JOIN concepts c ON c.id = a.concept_id
+            WHERE c.subject = ?
+            """,
+            (subject,),
+        )
+        correct, attempted = cursor.fetchone()
+        if attempted:
+            subject_accuracy[subject] = round(correct / attempted, 4)
+
+    cursor.execute(
+        "SELECT SUM(CASE WHEN result = 'unattempted' THEN 1 ELSE 0 END), COUNT(*) FROM attempts"
+    )
+    unattempted, total = cursor.fetchone()
+    overall_skip_rate = round(unattempted / total, 4) if total else 0.0
+
+    stuck_count = 0
+    concept_count = 0
+    revision_lags: List[float] = []
+    for subject in subjects:
+        patterns = get_time_patterns(subject, conn=connection)
+        concept_count += len(patterns)
+        stuck_count += sum(1 for p in patterns if p["stuck_pattern"])
+
+        for row in get_revision_due(subject, conn=connection, now_ms=now):
+            if row["due_now"]:
+                revision_lags.append(row["days_since_last_attempt"])
+
+    stuck_concept_rate = round(stuck_count / concept_count, 4) if concept_count else 0.0
+    avg_revision_lag_days = (
+        round(sum(revision_lags) / len(revision_lags), 2) if revision_lags else None
+    )
+
+    summary = {
+        "avg_attempts_per_session": avg_attempts_per_session,
+        "subject_accuracy": subject_accuracy,
+        "overall_skip_rate": overall_skip_rate,
+        "stuck_concept_rate": stuck_concept_rate,
+        "avg_revision_lag_days": avg_revision_lag_days,
+    }
+
+    cursor.execute(
+        """
+        INSERT INTO student_profile (id, summary, session_count, updated_at)
+        VALUES (1, ?, ?, ?)
+        ON CONFLICT(id) DO UPDATE SET
+            summary = excluded.summary,
+            session_count = excluded.session_count,
+            updated_at = excluded.updated_at
+        """,
+        (json.dumps(summary), session_count, now),
+    )
+    connection.commit()
+    return {"updated": True, "summary": summary, "session_count": session_count}
+
+
+def get_student_profile(conn: Optional[sqlite3.Connection] = None) -> Dict[str, Any]:
+    connection = conn if conn is not None else get_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT summary, session_count, updated_at FROM student_profile WHERE id = 1")
+    row = cursor.fetchone()
+    if row is None:
+        return {"session_count": 0, "summary": None}
+    summary_json, session_count, updated_at = row
+    return {"session_count": session_count, "summary": json.loads(summary_json), "updated_at": updated_at}
+
+
+
 
 
