@@ -1,9 +1,6 @@
 <p align="center">
-  <img src="assets/logo.png" alt="CRACK-JEE logo" width="160">
+  <img src="assets/banner.png" alt="CRACK-JEE — Plan smarter, Prepare better" width="100%">
 </p>
-
-<h1 align="center">CRACK-JEE</h1>
-<p align="center"><strong>Plan smarter · Prepare better</strong></p>
 
 <p align="center">
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-red">
