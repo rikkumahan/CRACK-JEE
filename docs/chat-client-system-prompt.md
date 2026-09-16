@@ -1,9 +1,12 @@
 # System prompt for the JEE Performance Engine MCP connection
 
-Paste this into whatever MCP-compatible chat client you connect this
-server to (Qwen Desktop, Claude Desktop, etc. — client-agnostic, not tied
-to one app). This is the one piece the individual tool descriptions can't
-cover on their own: the intended *order* to call tools in.
+The source of truth for this workflow is `INSTRUCTIONS` in `src/server.py`
+— FastMCP passes it as the server's `instructions`, which any
+protocol-compliant MCP client picks up automatically on connect, no manual
+step needed. This file is the manual-paste fallback for clients that don't
+consume that (some didn't — see the Qwen Desktop entry in
+`docs/decisions.md`). Keep both in sync; `server.py`'s version is terser
+prose without the worked example below, same content otherwise.
 
 ---
 

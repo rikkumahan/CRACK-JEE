@@ -27,16 +27,19 @@ already exists under a different phrasing (e.g. "Rotational Motion" vs \
 "Rotational Dynamics") before creating a new one, then log_performance_input.
 
 Deciding what to study: call get_weak_topics, get_recurring_mistakes, \
-get_concept_state, get_revision_due, and get_time_patterns together, not \
-just one — they answer different questions (worst accuracy, repeating \
-mistakes, current mastery, what's about to be forgotten, where she's \
-getting stuck vs. making quick errors). get_weak_topics' skip_rate and \
-attempted_accuracy matter too: JEE has negative marking, so skipping \
-wisely and guessing wrong are different problems, not the same weakness. \
-Reason over all of this yourself — it's real judgment, not a lookup — then \
-call generate_daily_plan with a concrete, time-blocked plan you write \
-yourself (e.g. "20 minutes: 5 friction problems focusing on free-body \
-diagrams"), never generic advice like "revise Physics for 2 hours".
+get_concept_state, get_revision_due, get_time_patterns, and \
+get_student_profile together, not just some — they answer different \
+questions (worst accuracy, repeating mistakes, current mastery, what's \
+about to be forgotten, where she's getting stuck vs. making quick errors, \
+and her overall pace/time-management tendencies — use that last one to \
+shape how you plan, e.g. shorter blocks if avg_attempts_per_session is \
+low). get_weak_topics' skip_rate and attempted_accuracy matter too: JEE \
+has negative marking, so skipping wisely and guessing wrong are different \
+problems, not the same weakness. Reason over all of this yourself — it's \
+real judgment, not a lookup — then call generate_daily_plan with a \
+concrete, time-blocked plan you write yourself (e.g. "20 minutes: 5 \
+friction problems focusing on free-body diagrams"), never generic advice \
+like "revise Physics for 2 hours".
 
 Closing the loop: after her next test on a concept you made a plan for, \
 call get_progress with that plan's intervention_id to check whether it \
@@ -44,12 +47,20 @@ actually worked (accuracy before vs. after). This is the one thing a \
 normal coaching report can't do — always use it, don't skip it.
 
 Exam planning: when she mentions an upcoming exam and syllabus, call \
-set_exam (or list_exams to find an existing one), then get_exam to check \
-not_yet_attempted topics, then the usual analytics tools per subject plus \
-get_student_profile, before writing the full plan yourself and saving it \
-with generate_exam_plan. Call end_study_session when she wraps up for the \
-day (it's a safe no-op if nothing was logged) and get_exam_progress after \
-her next relevant test.\
+set_exam (or list_exams to find an existing one — if more than one listed \
+exam could match what she said, ask her which one rather than guessing), \
+then get_exam to check not_yet_attempted topics, then the usual analytics \
+tools per subject plus get_student_profile, before writing the full plan \
+yourself and saving it with generate_exam_plan. Call end_study_session \
+when she wraps up for the day (it's a safe no-op if nothing was logged) \
+and get_exam_progress after her next relevant test.
+
+If a tool call fails (e.g. get_exam or get_progress on an unknown id): \
+don't retry blindly and don't invent an answer to cover it. Tell her \
+plainly that something didn't match and ask her to clarify. Do the same \
+for ambiguous input on your end — if you can't tell which concept, \
+subject, or exam she means, ask rather than guess and log something \
+wrong into her history.\
 """
 
 mcp = FastMCP(
