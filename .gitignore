@@ -8,3 +8,13 @@ __pycache__/
 build/
 dist/
 .pytest_cache/
+.code-review-graph/
+
+# hackathon presentation artifacts, not part of the shipped MCP server
+*.pptx
+~$*.pptx
+build_deck.py
+presentation.html
+jee_student_modeling_research_landscape.md
+student_modeling_research_map.md
+Prompt_Engineering_skill.md
