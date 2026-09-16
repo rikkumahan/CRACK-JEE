@@ -1,0 +1,55 @@
+name: Publish to PyPI
+
+# Trigger: push a version tag, e.g. `git tag v0.1.1 && git push --tags`.
+# The tag doesn't have to match pyproject.toml's version exactly, but PyPI
+# rejects re-publishing an existing version number -- bump pyproject.toml
+# first, then tag with the same number.
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10
+
+      - name: Run tests
+        run: uv run pytest tests/ -v
+
+      - name: Build
+        run: uv build
+
+      - name: Upload dist
+        uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      # required for PyPI Trusted Publishing (OIDC) -- no API token needed
+      id-token: write
+    steps:
+      - name: Download dist
+        uses: actions/download-artifact@v7
+        with:
+          name: dist
+          path: dist/
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10
+
+      - name: Publish to PyPI
+        run: uv publish
