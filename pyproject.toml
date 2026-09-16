@@ -5,7 +5,12 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "jee-performance-engine"
 version = "0.1.0"
-description = "JEE Performance Engine MCP Server"
+description = "A personal, local MCP server that acts as a performance coach for a JEE aspirant"
+readme = "README.md"
+license = "MIT"
+authors = [
+    { name = "Sai Rithvik Mahankali", email = "rikkumahan07@gmail.com" },
+]
 requires-python = ">=3.10"
 dependencies = [
     "fastmcp>=2.0.0",
