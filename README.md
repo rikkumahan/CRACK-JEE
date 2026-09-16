@@ -146,6 +146,7 @@ CRACK-JEE/
 ├── tests/                # Test suite (pytest)
 ├── research/synthetic_jee_kt/   # Independent KT-model benchmark, not part of the server
 ├── docs/                 # Design docs, decision log, setup instructions
+├── presentation/         # Hackathon deck source + related notes, not part of the server
 └── pyproject.toml
 ```
 
