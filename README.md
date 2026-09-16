@@ -91,14 +91,30 @@ for exactly how a connected client is expected to use them.
 ## Setup
 
 Requires [Python ≥ 3.10](https://www.python.org/) and
-[`uv`](https://github.com/astral-sh/uv).
+[`uv`](https://github.com/astral-sh/uv). Published on PyPI as
+[`crack-jee`](https://pypi.org/project/crack-jee/) — zero local install needed.
+
+Connect it from any MCP client by pointing it at `uvx crack-jee`, e.g.:
+
+```json
+{
+  "mcpServers": {
+    "crack-jee": {
+      "command": "uvx",
+      "args": ["crack-jee"]
+    }
+  }
+}
+```
+
+### For development
+
+Running from source instead of the published package:
 
 ```bash
 uv sync
-uv run python src/server.py   # runs the server on stdio for local dev
+uv run python src/server.py   # runs the server on stdio
 ```
-
-Connect it from any MCP client by pointing it at that command, e.g.:
 
 ```json
 {
@@ -111,10 +127,7 @@ Connect it from any MCP client by pointing it at that command, e.g.:
 }
 ```
 
-Once published to PyPI, `uvx crack-jee` will work with zero
-local install — see [`docs/setup.md`](docs/setup.md) for exact commands and
-[`docs/production-readiness-notes.md`](docs/production-readiness-notes.md)
-for what's left before that.
+See [`docs/setup.md`](docs/setup.md) for exact commands.
 
 ### Test
 

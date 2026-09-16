@@ -18,7 +18,15 @@ uv sync
 uv run python src/server.py
 ```
 
-### Run via uvx (what a real MCP client launches)
+### Run via uvx from PyPI (what a real MCP client launches)
+```
+uvx crack-jee
+```
+Published as `crack-jee` on PyPI (2026-09-17). Verified live: a fresh
+`uvx crack-jee` installs from the index and completes a real JSON-RPC
+`initialize` handshake.
+
+### Run via uvx from local source (pre-publish testing)
 ```
 uvx --from . crack-jee
 ```
