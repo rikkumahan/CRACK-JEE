@@ -29,6 +29,23 @@ def test_set_exam_creates_exam_and_dedupes_concepts(test_db):
     assert len(concept_ids) == 1
 
 
+@pytest.mark.parametrize(
+    "bad_date",
+    [
+        "15-11-2026",  # wrong field order
+        "2026/11/15",  # wrong separator
+        "Nov 15 2026",  # not ISO at all
+        "2026-13-01",  # invalid month
+        "",
+        None,
+    ],
+)
+def test_set_exam_rejects_malformed_exam_date(test_db, bad_date):
+    conn, _ = test_db
+    with pytest.raises(ValueError):
+        set_exam("Bad Date Exam", bad_date, [], conn=conn)
+
+
 def test_list_exams_reports_has_plan(test_db):
     conn, _ = test_db
     exam = set_exam(

@@ -3,6 +3,7 @@ import os
 import re
 import sqlite3
 import time
+from datetime import date
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -506,6 +507,13 @@ def set_exam(
     """syllabus: list of {"subject": ..., "concept": ...}. Resolves each
     entry through find_or_create_concept (same dedup as log_performance_input)
     and stores the resolved concept_id alongside subject/concept."""
+    try:
+        date.fromisoformat(exam_date)
+    except (TypeError, ValueError):
+        raise ValueError(
+            f"exam_date must be a 'YYYY-MM-DD' string, got {exam_date!r}"
+        )
+
     connection = conn if conn is not None else get_connection()
     resolved = []
     for item in syllabus:
