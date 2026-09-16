@@ -111,7 +111,7 @@ Connect it from any MCP client by pointing it at that command, e.g.:
 }
 ```
 
-Once published to PyPI, `uvx jee-performance-engine` will work with zero
+Once published to PyPI, `uvx crack-jee` will work with zero
 local install — see [`docs/setup.md`](docs/setup.md) for exact commands and
 [`docs/production-readiness-notes.md`](docs/production-readiness-notes.md)
 for what's left before that.

@@ -20,7 +20,7 @@ uv run python src/server.py
 
 ### Run via uvx (what a real MCP client launches)
 ```
-uvx --from . jee-performance-engine
+uvx --from . crack-jee
 ```
 
 ### Research track (separate, own venv)

@@ -64,7 +64,7 @@ wrong into her history.\
 """
 
 mcp = FastMCP(
-    name="jee-performance-engine",
+    name="crack-jee",
     version="0.1.0",
     instructions=INSTRUCTIONS,
 )

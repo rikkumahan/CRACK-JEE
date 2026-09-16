@@ -10,10 +10,10 @@ def test_raw_jsonrpc_handshake_via_uvx():
     """Verify uvx launches the server cleanly via a raw JSON-RPC stdio handshake.
     
     This matches the raw handshake technique from docs/fastmcp-migration-plan.md step 5:
-    spawns `uvx --from . jee-performance-engine`, writes an `initialize` request to stdin,
+    spawns `uvx --from . crack-jee`, writes an `initialize` request to stdin,
     and confirms the JSON-RPC response on stdout.
     """
-    cmd = ["uvx", "--from", str(REPO_ROOT), "jee-performance-engine"]
+    cmd = ["uvx", "--from", str(REPO_ROOT), "crack-jee"]
     proc = subprocess.Popen(
         cmd,
         cwd=str(REPO_ROOT),
@@ -46,7 +46,7 @@ def test_raw_jsonrpc_handshake_via_uvx():
         assert resp.get("id") == 1
         assert "result" in resp
         result = resp["result"]
-        assert result.get("serverInfo", {}).get("name") == "jee-performance-engine"
+        assert result.get("serverInfo", {}).get("name") == "crack-jee"
         assert result.get("serverInfo", {}).get("version") == "0.1.0"
         assert "protocolVersion" in result
 

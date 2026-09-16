@@ -14,12 +14,12 @@ Qwen Desktop saga in `docs/decisions.md`). Then delete `src/*.js`, drop
 `TEST_CMD` line, update `setup.md`.
 
 ## 2. Fix or ship the uvx launch path
-`docs/setup.md` calls `uvx --from . jee-performance-engine` "what a real MCP
+`docs/setup.md` calls `uvx --from . crack-jee` "what a real MCP
 client launches" — but that command hung 2+ minutes with zero output when
 tested live (see decisions log, live-verification entries). `uv run
 python src/server.py` / `uv run --directory` works reliably for local dev.
 Two options, pick one:
-- Publish the package to PyPI so plain `uvx jee-performance-engine` works.
+- Publish the package to PyPI so plain `uvx crack-jee` works.
 - Or fix the doc: stop calling `uvx --from .` the recommended path pre-publish.
 
 Doc currently states something that isn't true — fix before anyone else reads it.
