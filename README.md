@@ -1,17 +1,29 @@
 <p align="center">
-  <img src="assets/logo.png" alt="CRACK-JEE logo" width="180">
+  <img src="assets/logo.png" alt="CRACK-JEE logo" width="160">
 </p>
 
-# CRACK-JEE
+<h1 align="center">CRACK-JEE</h1>
+<p align="center"><strong>Plan smarter · Prepare better</strong></p>
 
-A personal AI coach for JEE aspirants, built as an MCP server. Not a tutor,
-not a chatbot with a syllabus bolted on — it turns raw test results into a
-closed feedback loop: log what happened, find the patterns a single test
-report can never show, get a concrete next study plan, and verify whether it
-actually worked on the next test.
+<p align="center">
+  <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-red">
+  <img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10%2B-red">
+  <img alt="Protocol: MCP" src="https://img.shields.io/badge/protocol-MCP-black">
+  <img alt="Local-first" src="https://img.shields.io/badge/data-local--only-black">
+</p>
 
-Free. Local. No subscription, no hosting bill, no data leaving your machine
-except to whatever LLM chat client you connect it to.
+<p align="center">
+  A personal AI coach for JEE aspirants, built as an MCP server. Not a tutor,
+  not a chatbot with a syllabus bolted on — it turns raw test results into a
+  closed feedback loop: log what happened, find the patterns a single test
+  report can never show, get a concrete next study plan, and verify whether
+  it actually worked on the next test.
+</p>
+
+<p align="center">
+  Free. Local. No subscription, no hosting bill, no data leaving your machine
+  except to whatever LLM chat client you connect it to.
+</p>
 
 ---
 
