@@ -1,5 +1,6 @@
 import os
 import sqlite3
+import threading
 import pytest
 from pathlib import Path
 
@@ -88,4 +89,33 @@ def test_list_concepts(test_db):
     math_concepts = list_concepts("Math", conn=conn)
     assert len(math_concepts) == 1
     assert math_concepts[0]["name"] == "Calculus"
+
+
+def test_find_or_create_concept_survives_concurrent_creation_race(test_db):
+    """10 threads racing to create the same brand-new concept name must
+    produce exactly one row, not one per thread. Without BEGIN IMMEDIATE
+    around the check-then-insert, this used to be able to duplicate the
+    concept and silently split its attempts/mastery across two ids."""
+    _, db_path = test_db
+    results = []
+
+    def worker():
+        c = init_db(db_path)
+        results.append(find_or_create_concept("Rotational Motion", "Physics", conn=c))
+        c.close()
+
+    threads = [threading.Thread(target=worker) for _ in range(10)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    assert len(results) == 10
+    assert len(set(results)) == 1
+
+    check_conn = init_db(db_path)
+    cursor = check_conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM concepts WHERE subject = 'Physics'")
+    assert cursor.fetchone()[0] == 1
+    check_conn.close()
 

@@ -130,23 +130,35 @@ def normalize(name: str) -> str:
 def find_or_create_concept(
     name: str, subject: str, conn: Optional[sqlite3.Connection] = None
 ) -> int:
+    """Check-then-insert, so it's wrapped in BEGIN IMMEDIATE: without this,
+    two calls racing to create the same brand-new concept name could both
+    pass the SELECT before either INSERTs, creating duplicate concept rows
+    that silently split one topic's attempts/mastery across two ids.
+    BEGIN IMMEDIATE takes the write lock upfront, so a concurrent caller
+    just waits on the existing busy_timeout instead of racing past it."""
     connection = conn if conn is not None else get_connection()
     target = normalize(name)
 
-    cursor = connection.cursor()
-    cursor.execute("SELECT id, name FROM concepts WHERE subject = ?", (subject,))
-    for row in cursor.fetchall():
-        concept_id, concept_name = row[0], row[1]
-        if normalize(concept_name) == target:
-            return concept_id
+    connection.execute("BEGIN IMMEDIATE")
+    try:
+        cursor = connection.cursor()
+        cursor.execute("SELECT id, name FROM concepts WHERE subject = ?", (subject,))
+        for row in cursor.fetchall():
+            concept_id, concept_name = row[0], row[1]
+            if normalize(concept_name) == target:
+                connection.commit()
+                return concept_id
 
-    created_at = int(time.time() * 1000)
-    cursor.execute(
-        "INSERT INTO concepts (name, subject, created_at) VALUES (?, ?, ?)",
-        (name, subject, created_at),
-    )
-    connection.commit()
-    return cursor.lastrowid  # type: ignore
+        created_at = int(time.time() * 1000)
+        cursor.execute(
+            "INSERT INTO concepts (name, subject, created_at) VALUES (?, ?, ?)",
+            (name, subject, created_at),
+        )
+        connection.commit()
+        return cursor.lastrowid  # type: ignore
+    except BaseException:
+        connection.rollback()
+        raise
 
 
 def list_concepts(
