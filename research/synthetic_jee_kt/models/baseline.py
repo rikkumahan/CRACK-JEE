@@ -41,8 +41,3 @@ class RecentAccuracyBaseline:
             self._history[key] = deque(maxlen=self.window_size)
         self._history[key].append(outcome)
 
-    def reset_student(self, student_id: str) -> None:
-        keys_to_del = [k for k in self._history if k[0] == student_id]
-        for k in keys_to_del:
-            del self._history[k]
-

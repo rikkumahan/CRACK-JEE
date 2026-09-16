@@ -77,9 +77,6 @@ class ConceptRegistry:
     def get(self, concept_id: str) -> Optional[Dict[str, str]]:
         return self._concepts.get(concept_id)
 
-    def all_concepts(self) -> List[Dict[str, str]]:
-        return list(self._concepts.values())
-
     def __len__(self) -> int:
         return len(self._concepts)
 
@@ -151,12 +148,6 @@ class QuestionBank:
 
     def __len__(self) -> int:
         return len(self.items)
-
-    def to_json(self, path: Union[str, Path]) -> None:
-        path = Path(path)
-        path.parent.mkdir(parents=True, exist_ok=True)
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump(self.items, f, indent=2)
 
     @classmethod
     def from_json(cls, path: Union[str, Path]) -> "QuestionBank":

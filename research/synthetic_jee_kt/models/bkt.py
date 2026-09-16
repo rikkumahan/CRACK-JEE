@@ -68,9 +68,6 @@ class BKTModel:
         self._states[key] = p_next
         return p_next
 
-    def reset(self) -> None:
-        self._states.clear()
-
     def fit(self, train_df: pd.DataFrame, max_concepts: int = 50) -> "BKTModel":
         """Fits BKT parameters per concept on training population via log-likelihood maximization."""
         grouped = train_df.groupby("concept_id")
