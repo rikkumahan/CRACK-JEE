@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo.png" alt="CRACK-JEE logo" width="180">
+</p>
+
 # CRACK-JEE
 
 A personal AI coach for JEE aspirants, built as an MCP server. Not a tutor,
