@@ -119,3 +119,27 @@ def test_find_or_create_concept_survives_concurrent_creation_race(test_db):
     assert cursor.fetchone()[0] == 1
     check_conn.close()
 
+
+def test_find_or_create_concept_self_heals_after_abandoned_transaction(test_db):
+    """A prior write on the same connection that raised before its own
+    commit() (e.g. a caller's later statement failing) leaves sqlite3's
+    implicit transaction open. Without a rollback first, the BEGIN
+    IMMEDIATE this function issues would raise "cannot start a
+    transaction within a transaction" -- permanently, since the shared
+    connection stays dirty across every future call. This must recover,
+    not crash."""
+    conn, _ = test_db
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO concepts (name, subject, created_at) VALUES (?, ?, ?)",
+        ("Stray Uncommitted Write", "Physics", 1),
+    )
+    assert conn.in_transaction
+
+    concept_id = find_or_create_concept("Rotational Motion", "Physics", conn=conn)
+    assert concept_id is not None
+
+    cursor.execute("SELECT name FROM concepts WHERE subject = 'Physics' ORDER BY name")
+    names = [row[0] for row in cursor.fetchall()]
+    assert names == ["Rotational Motion"]
+

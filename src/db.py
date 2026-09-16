@@ -135,10 +135,22 @@ def find_or_create_concept(
     pass the SELECT before either INSERTs, creating duplicate concept rows
     that silently split one topic's attempts/mastery across two ids.
     BEGIN IMMEDIATE takes the write lock upfront, so a concurrent caller
-    just waits on the existing busy_timeout instead of racing past it."""
+    just waits on the existing busy_timeout instead of racing past it.
+
+    If an earlier write on this same connection raised before its own
+    commit() (e.g. a later statement in handle_log_performance_input's
+    attempts/attempt_errors insert), sqlite3's implicit-transaction mode
+    leaves that transaction open, and BEGIN IMMEDIATE would raise "cannot
+    start a transaction within a transaction" here on every future call —
+    unrelated to whatever concept is being looked up. Roll back that
+    abandoned transaction first: nothing in this codebase intentionally
+    holds one open across calls, so if we're in one here, it's leftover
+    from a failure, not in-progress work worth preserving."""
     connection = conn if conn is not None else get_connection()
     target = normalize(name)
 
+    if connection.in_transaction:
+        connection.rollback()
     connection.execute("BEGIN IMMEDIATE")
     try:
         cursor = connection.cursor()
