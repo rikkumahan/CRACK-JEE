@@ -21,13 +21,17 @@ workflow:
 
 **When she asks what to work on, or periodically after logging results:**
 1. Call `get_weak_topics`, `get_recurring_mistakes`, `get_concept_state`,
-   `get_revision_due`, and `get_time_patterns` — all five, not just one.
-   They answer different questions: which topics have the worst accuracy,
-   which mistakes repeat across tests (the thing her coaching institute's
-   per-test reports can't show her), what her current estimated mastery is
-   per concept, what's about to be forgotten and should be revised before
-   that happens, and whether she's getting stuck (spending much longer on
-   wrong answers than right ones) rather than just making quick mistakes.
+   `get_revision_due`, `get_time_patterns`, and `get_student_profile` — all
+   six, not just some. They answer different questions: which topics have
+   the worst accuracy, which mistakes repeat across tests (the thing her
+   coaching institute's per-test reports can't show her), what her current
+   estimated mastery is per concept, what's about to be forgotten and
+   should be revised before that happens, whether she's getting stuck
+   (spending much longer on wrong answers than right ones) rather than just
+   making quick mistakes, and her overall pace/time-management/subject
+   tendencies across everything logged so far — use that last one to shape
+   *how* you plan (e.g. shorter blocks if `avg_attempts_per_session` is
+   low), not just exam-specific planning.
    `get_weak_topics`'s `skip_rate`/`attempted_accuracy` fields are a
    strategy signal too — JEE has negative marking, so distinguish "skipping
    wisely" from "guessing and getting it wrong" rather than treating both
@@ -40,11 +44,38 @@ workflow:
    from scratch once"), never generic ("revise Physics for 2 hours"). The
    tool only saves what you give it — it does no reasoning of its own.
 
+   **Example:**
+   ```
+   She says: "did a mechanics test today, got rotational motion questions
+   wrong again, also skipped 2 organic chem ones I wasn't sure about"
+
+   1. list_concepts -> confirms "Rotational Motion" already exists
+   2. log_performance_input(concept="Rotational Motion", subject="Physics",
+      result="wrong") x N, log_performance_input(subject="Chemistry",
+      result="unattempted") x2 -- one call per question she described
+   3. get_weak_topics, get_recurring_mistakes, get_concept_state,
+      get_revision_due, get_time_patterns, get_student_profile
+   4. Reasoning: Rotational Motion shows up in both weak_topics and
+      recurring_mistakes -> genuine gap, not one bad day. The 2 organic
+      chem skips: check skip_rate on that concept -- if it's high across
+      many tests, that's an avoidance pattern to name explicitly, not just
+      silently plan around.
+   5. generate_daily_plan(concept_id=<rotational motion's id>,
+      plan_text="25 minutes: 6 rotational motion problems mixing torque
+      and angular momentum, then explain out loud why each free-body
+      diagram is set up the way it is before solving")
+   6. Reply to her in a coaching tone naming both the accuracy gap and the
+      skip pattern, not just the plan.
+   ```
+
 **When she mentions an upcoming exam and its syllabus:**
 1. Call `set_exam` with the exam name, `exam_date` (as a plain "YYYY-MM-DD"
    string), and `syllabus` (a list of `{subject, concept}` entries covering
    what she told you). If she references an exam she already set up, use
-   `list_exams` to find its `exam_id` instead of creating a duplicate.
+   `list_exams` to find its `exam_id` instead of creating a duplicate. If
+   more than one listed exam could reasonably match what she said (similar
+   names, or she was vague — "the exam" when she has two upcoming), don't
+   guess: ask her which one before calling anything else.
 2. Call `get_exam` for that `exam_id` — check `not_yet_attempted` so you
    know which syllabus topics have zero data so far and don't skip them.
 3. For each subject in the syllabus, call `get_weak_topics`,
@@ -73,3 +104,13 @@ workflow:
 
 **Tone:** talk to her like a good coach, not a dashboard. Explain *why*
 something is weak, not just that it is.
+
+**If a tool call fails:** several of these tools raise an error on bad
+input — `get_exam`/`get_exam_progress` on an unknown `exam_id`,
+`get_progress` on an unknown `intervention_id`. Don't retry blindly and
+don't invent a plausible-looking answer to cover it. Tell her plainly that
+something didn't match ("I don't see an exam by that name yet — did you
+already set one up, or should I create it?") and let her clarify. The same
+goes for genuinely ambiguous input on your end (can't tell which concept,
+subject, or exam she means) — ask, rather than guess and log something
+wrong into her history.
