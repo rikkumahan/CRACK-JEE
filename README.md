@@ -77,11 +77,71 @@ for exactly how a connected client is expected to use them.
 
 ---
 
-## Setup
+## Quick Start (no coding experience needed)
+
+You don't need to know how to code to use this — five steps, about two
+minutes.
+
+**1. Install [Claude Desktop](https://claude.ai/download)** (free) if you
+don't already have it. This is the app you'll actually talk to.
+
+**2. Install `uv`.** It's a small tool that lets Claude Desktop download
+and run CRACK-JEE automatically — you only do this once, ever. Open:
+- **Windows:** PowerShell (search "PowerShell" in the Start menu)
+- **Mac:** Terminal (search "Terminal" in Spotlight)
+
+and paste in the matching command, then press Enter:
+
+```powershell
+# Windows
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+```bash
+# Mac / Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+**3. Open Claude Desktop's settings** → **Developer** tab → **Edit Config**.
+This opens a text file called `claude_desktop_config.json`.
+
+**4. Paste this in** (replace the whole file if it's empty, or add the
+`"crack-jee"` block if you already have other servers configured):
+
+```json
+{
+  "mcpServers": {
+    "crack-jee": {
+      "command": "uvx",
+      "args": ["crack-jee"]
+    }
+  }
+}
+```
+
+Save the file.
+
+**5. Restart Claude Desktop completely** (quit it, not just close the
+window, then reopen). That's it — try typing something like:
+
+> "I just did a Physics mock test — got Rotational Motion questions wrong,
+> skipped 2 Organic Chem ones I wasn't sure about."
+
+If it responds by logging the results and asking follow-up questions
+instead of just chatting normally, it's connected and working.
+
+*Using a different MCP-capable client (Qwen Desktop, etc.)? Same JSON
+block works — just find that app's own config file instead.*
+
+---
+
+## Setup (technical reference)
 
 Requires [Python ≥ 3.10](https://www.python.org/) and
 [`uv`](https://github.com/astral-sh/uv). Published on PyPI as
 [`crack-jee`](https://pypi.org/project/crack-jee/) — zero local install needed.
+For the plain-language version, see [Quick Start](#quick-start-no-coding-experience-needed)
+above.
 
 Connect it from any MCP client by pointing it at `uvx crack-jee`, e.g.:
 
