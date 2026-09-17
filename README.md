@@ -47,20 +47,9 @@ arithmetic and SQL, not inference.
 
 ## How it works
 
-```
-you describe a test  →  LLM extracts structured data  →  local SQLite log
-                                                                │
-                                                                ▼
-                                            deterministic analytics engine
-                                     (mastery, weak spots, revision timing,
-                                      time-on-task, skip/negative-marking)
-                                                                │
-                                                                ▼
-                                     LLM reasons over it, writes a real plan
-                                                                │
-                                                                ▼
-                                          next test's results close the loop
-```
+<p align="center">
+  <img src="assets/how-it-works.png" alt="How CRACK-JEE works: describe a test, LLM extracts structured data, deterministic analytics engine, LLM reasons over it and writes a plan, next test closes the loop" width="100%">
+</p>
 
 Connect it to any MCP-capable chat client (Claude Desktop, Qwen Desktop,
 etc.) and just talk to it like a coach — describe results in whatever format
