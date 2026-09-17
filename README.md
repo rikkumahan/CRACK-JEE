@@ -82,8 +82,11 @@ for exactly how a connected client is expected to use them.
 You don't need to know how to code to use this — five steps, about two
 minutes.
 
-**1. Install [Claude Desktop](https://claude.ai/download)** (free) if you
-don't already have it. This is the app you'll actually talk to.
+**1. Install an MCP-capable chat app** if you don't already have one —
+this is what you'll actually talk to. Two good options:
+- [Claude Desktop](https://claude.ai/download) (free)
+- [Qwen Desktop](https://qwen.ai/) — steps 3-4 differ slightly, see the
+  note at the end
 
 **2. Install `uv`.** It's a small tool that lets Claude Desktop download
 and run CRACK-JEE automatically — you only do this once, ever. Open:
@@ -130,8 +133,14 @@ window, then reopen). That's it — try typing something like:
 If it responds by logging the results and asking follow-up questions
 instead of just chatting normally, it's connected and working.
 
-*Using a different MCP-capable client (Qwen Desktop, etc.)? Same JSON
-block works — just find that app's own config file instead.*
+**Using Qwen Desktop instead?** Skip steps 3-4 above and instead go to
+Settings → MCP → My MCP → Add MCP → **Add using JSON**, and paste the
+same JSON block from step 4. Qwen Desktop's form only accepts `uvx` or
+`npx` as the command — since `crack-jee` runs via `uvx`, it fits
+natively, no workaround needed.
+
+*Using some other MCP-capable client? Same JSON block works — just find
+that app's own config file instead.*
 
 ---
 
